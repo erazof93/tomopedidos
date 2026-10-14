@@ -331,14 +331,15 @@
                       "source":  "verification/041_b2a_caller_negatives.sql",
                       "source_sha256":  "397C8C8D30259E9377E554BB6B18D47E13580BF8C981AD1931BA993AE20C2E0A",
                       "staged":  "staged/verification/041_b2a_caller_negatives.sql",
-                      "staged_sha256":  "4AED1AEABFC06F556D25EAB69862128CF7258CEA0F0D015960950AD281A120E6",
+                      "staged_sha256":  "789198EA36F59FFFBD29DEDFA520658BB452C87829119D0B040665B643CB6CFA",
                       "target_replacements":  1,
                       "migration_bytes_identical":  false,
                       "function_bodies_identical":  true,
                       "function_body_hashes":  [
 
                                                ],
-                      "preflight_prefix":  true
+                      "preflight_prefix":  true,
+                      "verifier_only_correction":  "F4A_authorized_CASE_parentheses_only_expected_counts_33_26_unchanged"
                   },
                   {
                       "source":  "verification/050_b2a_retention_concurrency.sql",

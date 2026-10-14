@@ -47,4 +47,4 @@ foreach ($pin in $pins.files) {
     $path=Join-Path $PSScriptRoot $pin.file
     if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -cne $pin.sha256) { throw ('F control fixture/hash drift: '+$pin.file) }
 }
-Write-Output ('PASS F offline: '+$m.files.Count+' staged SQL/spec files; four byte-identical migrations; isolated target/no ports/fallback; includes and control pins; 9 exact C Down functions; qualified Goose commands; PS syntax. PostgreSQL/Docker NOT executed; system ID and execution approvals pending.')
+Write-Output ('PASS F offline: '+$m.files.Count+' staged SQL/spec files; four byte-identical migrations; isolated target/no ports/fallback; includes and control pins; 9 exact C Down functions; qualified Goose commands; PS syntax. This checker performs no PostgreSQL/Docker execution; actual F1/F2 evidence is in docs/verification.md; later phases require separate approval.')

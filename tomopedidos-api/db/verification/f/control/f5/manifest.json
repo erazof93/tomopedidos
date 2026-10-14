@@ -1,0 +1,137 @@
+{
+    "run_id":  "tp-b2a-f-20261014-r01",
+    "database":  "tp_b2a_f_20261014_r01",
+    "system_identifier":  "7696590721605967915",
+    "status":  "F5C_tested_faults_and_post_revoke_renewal_PASS_other_acceptance_pending",
+    "tool":  "isolationtester18.6",
+    "go_compiler":  "go1.27.2",
+    "native_execution_authorized":  true,
+    "fault_execution_authorized":  true,
+    "files":  [
+                  {
+                      "file":  "101_observe_fault.sql",
+                      "sha256":  "46C17775661B64A200F98F14CD2D4879CC79D86FD9C7FB09F5CB7AF4A8566D7A",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "102_statement_timeout.sql",
+                      "sha256":  "D68A45E663C1AA276F39CEFC75B46DF547C9D40C75A32214C00935AAF8F39ED8",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "auth9.spec",
+                      "sha256":  "337444807D3A48F46B96B90B93F59A871DBF46DF7F60AB37C5A36F444B26A402",
+                      "permutations":  9
+                  },
+                  {
+                      "file":  "cleanup12.spec",
+                      "sha256":  "75A363C4C5FA34476151D966F0AF13770E71BBFE052BAC4700B15B769CFD6F2D",
+                      "permutations":  12
+                  },
+                  {
+                      "file":  "go.mod",
+                      "sha256":  "5B7882CD966CCB67329BD36F2F7F1AC469956FD11DA66DBE8D9A6F8EBDC7C297",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "harness_test.go",
+                      "sha256":  "36CD8E88CC318B9CF711ADAB24726E2392C944EC8E4D17A2583AEAE85627C2C3",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "locks2.spec",
+                      "sha256":  "CDC3EC0A2D3EE2DC306BF42DD5C92BB95B381F8B5C0706948EBEF9CBC490881C",
+                      "permutations":  2
+                  },
+                  {
+                      "file":  "main.go",
+                      "sha256":  "2C5E79E62824B98554FCDB00DFED1BB8FDFC2988BE2D105EF1B534A077402A2F",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "MATRIX.md",
+                      "sha256":  "42B70C5875C350FC9B198F64DCBB7B2B8AD05BA6ADA4DA322B8D714809463AA8",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "proxy.go",
+                      "sha256":  "2A3D633746AEB9DA599D1CD44A9EFFADEFAAE47940EA098D5EE5ACD72CF94FFE",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "README.md",
+                      "sha256":  "56297A535FCA2239E3D28C324DE7BFE022B8D1554898128EFCF0A184BA9540E1",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "103_final_concurrency_state.sql",
+                      "sha256":  "5050E6C5820D37ECB24AFCBAED42D0707226F0CFF57721ECF1CB33D8D25CABAA",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "F5B_RESULTS.md",
+                      "sha256":  "9D6293EE7B1FE06149E9A12C9EF68500FD7C9E80E53E70BEAADDF5BE190B3734",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "F5B_RESULTS.json",
+                      "sha256":  "D8D44F965BB539661C01930148A353AD3F4F4E61548E05DB908FB95DF6EED6DF",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "105_fault_client.sql",
+                      "sha256":  "2349E4BF1AAC84B0A598523324F8FAF9FE5B7958F26CC352A62168C65772CB24",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "106_sql_error_client.sql",
+                      "sha256":  "4E1AD7EBFCF019B4D0E3707ED5092A9AE2502946E5DA74B96D35EF5BFB554276",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "110_revoke_seed.sql",
+                      "sha256":  "80E94D3709FB47A209920E340F0BC16C5C6AE05C47D2CD70D6782A029CA9813F",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "111_revoke_confirmed.sql",
+                      "sha256":  "C810854E3E3D56AA2064EE25FE799E58BE6D478D6DC28A8CF7B95D0E18FCE2F5",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "112_renew_after_revoke.sql",
+                      "sha256":  "9F115FC3EB7AEFD8830DCAB2B0F2516D64C2C0EEBEEAF73CB68755A9D22D7BE6",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "113_revoke_final.sql",
+                      "sha256":  "1642F4432DEDA07B9117C912ACC5190F2B1153742E3E52834012B60E3432E880",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "114_revoke_teardown.sql",
+                      "sha256":  "E2B851C2AEF5080715DB141A3412305F6633A2EB501AE0027B1BDEB3AF5E3569",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "115_global_confirmed.sql",
+                      "sha256":  "DC049F3FEED573B421FAFCACB90D3C38066C2022B55CF2AD3E98897829A8830F",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "116_global_final.sql",
+                      "sha256":  "851C585D97FA192673E1DCDAE33D383A850EFE740F2ABE13B4E194FEDA16D9F3",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "117_final_fault_state.sql",
+                      "sha256":  "88F8724CF0A0C088C9E6DDE4C425AC51CCE97AA7CBA9FF40C51449F36AAEB28D",
+                      "permutations":  0
+                  },
+                  {
+                      "file":  "F5C_RESULTS.md",
+                      "sha256":  "F6E043C545F62239D428E597CD9D0873B1EB161CE6F95E08524C6952F35786B8",
+                      "permutations":  0
+                  }
+              ]
+}

@@ -76,7 +76,7 @@ BEGIN
             END;
         END LOOP;
     END IF;
-    IF v_count <> CASE session_user WHEN 'tomopedidos_runtime' THEN 33 ELSE 26 END THEN
+    IF v_count <> (CASE session_user WHEN 'tomopedidos_runtime' THEN 33 ELSE 26 END) THEN
         RAISE EXCEPTION 'Unexpected negative count';
     END IF;
     RAISE NOTICE 'D real caller negatives passed: actor %, count %',session_user,v_count;

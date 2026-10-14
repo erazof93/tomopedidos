@@ -86,7 +86,7 @@ SELECT pg_temp.expect_rejection('credential_phc',
 SELECT pg_temp.expect_rejection('credential_fk',
  $$INSERT INTO identity.identity_credentials VALUES('f0000000-0000-4000-8000-000000000009','$argon2id$v=19$m=19456,t=2,p=1$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',clock_timestamp())$$,'23503');
 SELECT pg_temp.expect_rejection('identity_restrict_delete',
- $$DELETE FROM identity.identities WHERE id='f0000000-0000-4000-8000-000000000001'$$,'23503');
+ $$DELETE FROM identity.identities WHERE id='f0000000-0000-4000-8000-000000000001'$$,'23001');
 SELECT pg_temp.expect_rejection('audience_epoch_negative',
  $$UPDATE identity.audience_revocations SET auth_epoch=-1 WHERE identity_id='f0000000-0000-4000-8000-000000000001' AND audience='admin'$$,'23514');
 SELECT pg_temp.expect_rejection('audience_key_immutable',

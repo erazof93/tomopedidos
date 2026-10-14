@@ -1,0 +1,148 @@
+{
+    "database":  "tp_b2a_f_20261014_r01",
+    "system_identifier":  "7696590721605967915",
+    "status":  "F6A_prepared_offline_only",
+    "execution_authorized":  false,
+    "files":  [
+                  {
+                      "file":  ".gitignore",
+                      "sha256":  "C73CFF0E8430AE13F7FAC100BF544F67959D431C15CDC9A3925BC3C86D7128A0"
+                  },
+                  {
+                      "file":  "cancel_exact.sql",
+                      "sha256":  "554187F9E53CB02AFFB97CF1FF568AF9E91B0BBFB143DBDFF02282E8BE93CF86"
+                  },
+                  {
+                      "file":  "cancel_waiter.sql",
+                      "sha256":  "54C7A8A88DBBC40EB7A3B9180D5D81B3ACD31E6C6ECAB7CB29AD90BA0AE42FAF"
+                  },
+                  {
+                      "file":  "Check-F6.ps1",
+                      "sha256":  "A6CB83C35B69AA7F2DF64DB2343FDC100BE52FAC3CE076F4AAC3663935FDC51F"
+                  },
+                  {
+                      "file":  "checks.go",
+                      "sha256":  "DB3D4D4549029CCDA20C990B11E9AECD0C8B5D2399BE661572744DF907CC51EB"
+                  },
+                  {
+                      "file":  "checks_test.go",
+                      "sha256":  "F89330AEFE21342A6762858FA507799D62D4C30C1A3DD93DDE6403D1D46CA47E"
+                  },
+                  {
+                      "file":  "check_transition.sql",
+                      "sha256":  "DCB07B66969E135DA90AC86ECB86EC541BEB9E24F5D38EDEA3176D7AD0CD66A1"
+                  },
+                  {
+                      "file":  "dependency_inventory.sql",
+                      "sha256":  "83EC1536EBBFAFFE15CE8C906DB8CB0DA79EC4C38F155376021FA7CF539EA24D"
+                  },
+                  {
+                      "file":  "go.mod",
+                      "sha256":  "CA10D910A1A0EE2AB5A48094F9A3D9116E00C2CD750773F8517EF02F69C6CC56"
+                  },
+                  {
+                      "file":  "holder.sql",
+                      "sha256":  "62A86B68E375722614E2F5A90973C99244D9D0EE20EC9C80650E946C9F63CF42"
+                  },
+                  {
+                      "file":  "lock_timeout.sql",
+                      "sha256":  "3DD4B07EC787F271EEB091B5B1B699FAAF65133AD0362B0A65A3398E0E80FCCE"
+                  },
+                  {
+                      "file":  "Print-F6Commands.ps1",
+                      "sha256":  "ED5C518F24A794DCECED32B5D0AEC3E8EC082C8DC3741641075DFA2C01612D6A"
+                  },
+                  {
+                      "file":  "README.md",
+                      "sha256":  "49C8CB9BD68FCD7B0E63490407CB6BB588FDDE887A0A6991EEA3866C0F6F193E"
+                  },
+                  {
+                      "file":  "reconcile_timeout.sql",
+                      "sha256":  "3FECF7317BF3CC8AF5D5DB7F5D1F01EAA2525C1FB6ED5650214F72C050F980CC"
+                  },
+                  {
+                      "file":  "statement_timeout.sql",
+                      "sha256":  "1FC225C6C650AD65D1C776710EA5C62BE9E41240E7EDD5CB0681A1B4FAAEB7E1"
+                  },
+                  {
+                      "file":  "../../target.json",
+                      "sha256":  "CD4D1D1611FFFE1FFCF7229A6C34AB6C53D5E484FEFA71BB687C7F45027B1D7B"
+                  },
+                  {
+                      "file":  "../../compose.f.yaml",
+                      "sha256":  "BA362D5C0AAE6CEE19EFF6D5BB8E3F0CD5348485A5F564578BAC939C9992639C"
+                  },
+                  {
+                      "file":  "../../compose.tools.yaml",
+                      "sha256":  "3C2C9306A6A0EE4AFCE37E36D81F024CFA3E15877F6FA86A2A1E42BB6D7F5CF3"
+                  },
+                  {
+                      "file":  "../001_preflight.sql",
+                      "sha256":  "B46A601849AB92C126859DAEEEEF8CACA20491DDC33BE46F86077BDB72D84133"
+                  },
+                  {
+                      "file":  "../003_c_down.sql",
+                      "sha256":  "E2C200C7485F14E68CFC9E6A30A67F25AFB9B4A02694D55063B2D8EC1EF968CA"
+                  },
+                  {
+                      "file":  "../002_post_down.sql",
+                      "sha256":  "AD661152A2FAE3811D11B179545D77F4AF933699804B7C2B2E0DE10B3B9BE656"
+                  },
+                  {
+                      "file":  "../../staged/administration/b2a-auth-disable-v1.sql",
+                      "sha256":  "236DD9B3E54F41B160A17558EECFDB02A685811DB6BFE63B11602B59BC95821C"
+                  },
+                  {
+                      "file":  "../../staged/administration/b2a-auth-ungrant-v1.sql",
+                      "sha256":  "27DD0680F1B33CBE3847508C85D6CD50095387D08EF67FD5ABD41D8ED84699AF"
+                  },
+                  {
+                      "file":  "../../staged/administration/b2a-auth-functions-v1.sql",
+                      "sha256":  "1F5F490334896DBF56F43051EBA5C1AD0D66A4B7AE5DA970409A185E5E16D8BC"
+                  },
+                  {
+                      "file":  "../../staged/administration/b2a-auth-grants-v1.sql",
+                      "sha256":  "E6CA634DDD0B4E997EFA4E1C775EBC7C58058CB7E14267FF3DA9904D534E3B10"
+                  },
+                  {
+                      "file":  "../../staged/administration/b2a-auth-enable-v1.sql",
+                      "sha256":  "C4C5170C64253C4FAE381BD3D6EB5BE0B4C6525A6A6A2CA765B79A908EF4816A"
+                  },
+                  {
+                      "file":  "../../staged/administration/retention/b2a-cleanup-disable-v1.sql",
+                      "sha256":  "EE60ABCEE63567DB87E9E4DB48CFA16F4EB8DC5D780BA7C57670265B854D4D04"
+                  },
+                  {
+                      "file":  "../../staged/administration/retention/b2a-session-cleanup-down-v1.sql",
+                      "sha256":  "F255CB367C84FC0CC40CA5375B918766A0CF8DE03904F68B2F276A5B987133F3"
+                  },
+                  {
+                      "file":  "../../staged/administration/retention/b2a-session-cleanup-v1.sql",
+                      "sha256":  "5EBC1BB9AEE0D458AD1743560C61FD2A5F043A9EC1FCD7ACC4FEDC30C9F8CE67"
+                  },
+                  {
+                      "file":  "../../staged/administration/retention/b2a-cleanup-enable-v1.sql",
+                      "sha256":  "F52B6D3655E7ADCCA7A20D18A8998CBFE27423254538D2706C35F9733001622A"
+                  },
+                  {
+                      "file":  "../../staged/migrations/00001_identity_credentials.sql",
+                      "sha256":  "AC7CA512915A8290FE20D5A3003C30BCD78407AB55DCC630923A65EADDAF4258"
+                  },
+                  {
+                      "file":  "../../staged/migrations/00002_audience_sessions.sql",
+                      "sha256":  "13909AD7561780C9CC55A38A8B789A64D12C511E7A94BB4ACDA3036F12BB3F83"
+                  },
+                  {
+                      "file":  "../../staged/migrations/00003_identity_guards_indexes.sql",
+                      "sha256":  "B1DC89967190A919E861F1B7FD77EB6E8EFCA9BA44DDA35B30C4D14AB7621B31"
+                  },
+                  {
+                      "file":  "../../staged/migrations/00004_session_cleanup_index.sql",
+                      "sha256":  "37BE379E0D91F8ACA0C75A36E6D4B0E39697B8EE9B219BDD479D8C52FF95E223"
+                  },
+                  {
+                      "file":  "observe_cancel.sql",
+                      "sha256":  "A156A8CF93C297FE0C9E08C1D37BA005915A7BE13F63C9C9379CF5DF12E03EFC"
+                  }
+              ]
+}

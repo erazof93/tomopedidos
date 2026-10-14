@@ -2721,3 +2721,598 @@ Se generó una credencial independiente mediante RNG criptográfico (48 bytes) e
 ERROR y parada: `git check-ignore -- .local/b2a-f/r01.private.env`, ejecutado en D:\tomopedidos, devolvió exit 128 y `fatal: not a git repository (or any of the parent directories): .git`. El comando envolvente terminó exit 1 mediante guard `Private file not ignored`. La regla .local/ existe en .gitignore, pero la exclusión efectiva mediante Git no quedó comprobada. No se hizo reintento ni corrección posterior a este fallo. La credencial privada permanece en disco; no se eliminó ni sobrescribió.
 
 Estado: NO Docker Compose up/build/pull, NO recursos creados, NO SQL ni preflight ejecutado. Digest runtime, versión PostgreSQL, base real, system_identifier y ausencia runtime de puertos pendientes. Imagen declarada: postgres:18.6-bookworm@sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c. Target/system_identifier continúa sin modificar. F2 bloqueada hasta resolver comprobación de archivo privado y completar F1 con nueva revisión de ausencia de recursos. No B2-A migrada ni verificada.
+
+## F1 — Git protegido y entorno desechable creado — 2026-10-14
+
+Git: raíz D:/tomopedidos, rama main, estado inicial limpio. HEAD y referencia local origin/main coinciden: f776bfc3766af538030b7d1cc9bcbf44ca8d802a. Sin fetch ni modificación del historial/commit/push. Historial inspeccionado: todos los commits disponibles mediante git rev-list --all; no certifica referencias remotas borradas o no disponibles localmente.
+`git check-ignore -v -- .local/b2a-f/r01.private.env .env .env.test .local/check`: exit 0; reglas .local/, .env y .env.* efectivas; excepción .env.example. Ningún archivo sensible por nombre en historial disponible ni índice. Búsqueda exacta de la credencial bootstrap en contenidos de todos los commits disponibles: cero coincidencias, sin imprimir valor. Escaneo de patrones de claves privadas/tokens/passwords mostró tres archivos; revisión confirmó password:null en dos manifiestos y extracción de variable en scripts/init-local-db.test.cjs; no contraseña literal. ACL archivo privado protegida, cero otros principales. Sin lectura de secretos del entorno principal. Estas comprobaciones no son garantía universal de ausencia de secretos arbitrarios.
+
+Compose F, tools, target, manifiesto, runbook y ambos controles SQL inspeccionados. Check-F exit 0, incluye 9/9 contratos SQL/YAML, pins B1/A–E, staging30 y migraciones00001–00004 byte-identical. F1 exige solo bootstrap; Goose/migrator separado en compose.tools.yaml, no utilizado. No build, root .env ni montajes privados.
+
+Invocaciones Docker, una por exec_command; todas exit 0:
+1. docker --context default version: engine29.8.1 Linux amd64, contexto default.
+2. docker --context default container ls -a --filter name=tp-b2a-f-20261014-r01 --format '{{.Names}}': vacío.
+3. docker --context default network ls --filter name=tp-b2a-f-20261014-r01-net --format '{{.Name}}': vacío.
+4. docker --context default volume ls --filter name=tp-b2a-f-20261014-r01-data --format '{{.Name}}': vacío.
+5. docker --context default compose --env-file D:\tomopedidos\.local\b2a-f\r01.private.env -f D:\tomopedidos\tomopedidos-api\db\verification\f\compose.f.yaml -p tp-b2a-f-20261014-r01 config --services: solo postgres.
+6. Mismo prefijo Compose, up -d --no-deps postgres: creó red, volumen y contenedor exclusivos F.
+7. docker --context default inspect --format [selección Id,Image,Name,State,Config.Image/Labels,HostConfig.PortBindings/NetworkMode/Privileged/PublishAllPorts,Mounts,NetworkSettings.Networks; nunca Config.Env] tp-b2a-f-20261014-r01-pg.
+8. docker --context default network inspect tp-b2a-f-20261014-r01-net.
+9. docker --context default volume inspect --format [Name,Driver,Labels,OptionsCount] tp-b2a-f-20261014-r01-data.
+Snapshots no sensibles guardados .local/b2a-f/f1-{container,network,volume}.json; las claves del formato selectivo perdieron comillas por transporte Windows y fueron normalizadas localmente antes de analizar JSON; sin segunda captura ni cambio Docker. Assert-FDockerSnapshot.ps1 exit0 PASS: nombres/labels/IDs coherentes, contenedor running, única red internal sin peers ajenos, volumen local sin opciones, exactamente tres mounts (dos binds F read-only, volumen exclusivo), PortBindings vacío y PublishAllPorts=false.
+10. docker --context default image inspect postgres:18.6-bookworm@sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c --format '{{.Id}} {{json .RepoDigests}}': ID y RepoDigest coinciden con digest aprobado y Image real del contenedor.
+11. docker --context default exec tp-b2a-f-20261014-r01-pg pg_isready -h 127.0.0.1 -p 5432 -U tomopedidos_bootstrap -d tp_b2a_f_20261014_r01: accepting connections, exit0. Compose no define healthcheck: disponibilidad comprobada con pg_isready y conexión SQL real, no estado Docker Health inexistente.
+12. docker --context default exec tp-b2a-f-20261014-r01-pg sh -c 'PGPASSWORD=$POSTGRES_PASSWORD exec psql -X -w -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 5432 -U tomopedidos_bootstrap -d tp_b2a_f_20261014_r01 -f /f/control/000_identify.sql': BEGIN READ ONLY, DO exitoso, fila esperada, ROLLBACK, exit0.
+13. Mismo exec/psql, -v f_actor=tomopedidos_bootstrap -v f_system_id=7696590721605967915 -f /f/control/001_preflight.sql: exit0 sin salida; ON_ERROR_STOP y ramas de aserción aprobaron base, cluster_name, versión180006, actor, TCP, ausencia tomopedidos_local, solo plpgsql y system_identifier exacto. Contraseña referenciada exclusivamente desde ambiente del contenedor, nunca literal ni impresa.
+
+Identidad real: base tp_b2a_f_20261014_r01; PostgreSQL server_version_num180006 (18.6); cluster_name tp-b2a-f-20261014-r01; system_identifier7696590721605967915; TCP127.0.0.1:5432 interno. Contenedor ID4218b22fbb213e9ae748e164f4cb429a74ba2d8307e386a1e0d09c750437d351. Red ID3718c9c6ac5886e43375b28988d3cf48f47c0e07176d97fac403ba48b7757550. Volumen tp-b2a-f-20261014-r01-data. Ningún puerto publicado. Digest sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c.
+Hashes previos a SQL: control/000_identify.sql DE09107F76244529593BFAB82BAAC1441473CC47F4462B1D55A401EF9428495F; control/001_preflight.sql B46A601849AB92C126859DAEEEEF8CACA20491DDC33BE46F86077BDB72D84133.
+
+14. Lectura adicional intentada con mismo exec/psql y -c "SELECT version(); SELECT rolname FROM pg_roles ORDER BY rolname; SELECT datname FROM pg_database ORDER BY datname; SELECT nspname FROM pg_namespace ORDER BY nspname;": exit0 pero salida inesperada `-- (1 row)`, sin resultados previstos, por transporte de comillas Windows/sh. NO se considera comprobación aprobada de inventario/version-string. No reintento ni más SQL tras este resultado. No invalida las aserciones de identidad y preflight de archivos ejecutadas antes. Inventario suplementario de roles/schemas queda pendiente; conservar resultado, no asumir aprobado por exit0.
+
+Solo docs/verification.md y snapshots privados escritos en esta sesión. target.json conserva system_identifier:null y flags de preparación: ID real registrado aquí, su pin y actualización coherente de manifiesto para etapas posteriores quedan pendientes de preparación autorizada. F2 requiere autorización específica para baseline B1/credenciales posteriores; refrescar identidad/snapshots y resolver lectura suplementaria antes de avanzar. No B1/Goose/C/D/E/cleanup ejecutado, ni roles adicionales provisionados, recursos eliminados, tomopedidos_local/Celtas accedidos, deploy/commit/push. B2-A NO migrada ni verificada en PostgreSQL. Separación demostrada por configuración/IDs/mounts, no comparación byte a byte de otras bases.
+
+## F2 — baseline B1 equivalente aplicado exclusivamente en F — 2026-10-14
+
+Autorización recibida para baseline B1 F y verificaciones; no Goose00001–00004, C/D/E, credenciales adicionales, entorno principal o Celtas. La lectura ambigua F1 provenía del transporte Windows→sh de -c con comillas anidadas. Se creó control/005_f2_inventory.sql y se ejecutó mediante -f, sin SQL en argumentos ni relajación de controles. BEGIN READ ONLY, incluye001_preflight, listados explícitos y marcador F2 inventory passed, ROLLBACK. Antes de baseline f_require_empty=1 exige ausencia de cualquier rol no pg_* salvo bootstrap, schemas no iniciales, relaciones fuera de catálogos y funciones public. Resultado real previo: PostgreSQL18.6 (Debian18.6-1.pgdg12+2), SID7696590721605967915, bootstrap único rol no builtin, cuatro DB iniciales (postgres/template0/template1/F), cuatro schemas iniciales, cero relaciones no catalogales. Exit0/PASS/ROLLBACK; ambigüedad resuelta.
+
+target.json pinó system_identifier como string7696590721605967915. Nombres/digest/flags generales de preparación intactos. f-manifest actualizó pin target, agregó inventario y registró alcance F1/F2; ejecución Goose=false, C_D_E=false. Booleano agregado histórico Docker_SQL_Goose_PostgreSQL_executed indica que hubo ejecución de herramientas del grupo, NO que se ejecutó Goose; execution_detail discrimina. Check-F solo cambió mensaje final para remitir a evidencia real, no aserciones. Stage-manifest conserva metadata histórica de generación offline; spec nativo no regenerado ni ejecutado.
+
+Precheck real Docker: invocaciones separadas `docker --context default version`; `inspect` selectivo sobre tp-b2a-f-20261014-r01-pg (sin Env); `network inspect tp-b2a-f-20261014-r01-net`; `volume inspect --format` selectivo Name/Driver/Labels/OptionsCount sobre tp-b2a-f-20261014-r01-data; `image inspect postgres:18.6-bookworm@sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c --format '{{.Id}} {{json .RepoDigests}}'`. Todas exit0. Snapshots privados f2-container/network/volume.json (normalización de claves sin comillas del formato Windows igual que F1). Assert-FDockerSnapshot PASS exit0: IDs F1 intactos, running, proyecto/labels exactos, red interna exclusiva, volumen local sin opciones, tres mounts exactos; binds control/staged read-only; PortBindings vacío, sin PublishAllPorts/privileged/host network. Image y RepoDigest digest aprobado. Archivo bootstrap F sigue ignorado por Git y ACL protegida; password solo desde ambiente del contenedor, sin impresión, credenciales ajenas ni nuevas credenciales.
+
+Todos los SQL siguientes se ejecutaron con una invocación Docker por archivo, usando prefijo exacto:
+`docker --context default exec tp-b2a-f-20261014-r01-pg sh -c 'PGPASSWORD=$POSTGRES_PASSWORD exec psql -X -w -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 5432 -U tomopedidos_bootstrap -d tp_b2a_f_20261014_r01 -v f_actor=tomopedidos_bootstrap -v f_system_id=7696590721605967915 [opciones por archivo]'`.
+Orden/opciones y resultados:
+1. `-v f_require_empty=1 -f /f/control/005_f2_inventory.sql`: preflight+pristine+inventory PASS, ROLLBACK, exit0.
+2. `-f /f/staged/bootstrap/001_roles.sql`: BEGIN, guardsDO, GRANT ROLE×3, COMMIT, exit0. Dos NOTICE de membership existente son consecuencia esperada de tres GRANT sucesivos con opciones explícitas, no roles preexistentes: las comprobaciones de pristine y atributos/options posteriores pasaron.
+3. `-f /f/staged/bootstrap/002_schema_privileges.sql`: cinco CREATE SCHEMA, REVOKE/GRANT, defaults y role settings, COMMIT, exit0.
+4. `-f /f/staged/verification/010_b1_metadata.sql`: B1 metadata checks passed, ROLLBACK, exit0.
+5. `-f /f/staged/verification/020_b1_effective_privileges.sql`: delegación migrator→owner, tabla/secuencia/función sintéticas transaccionales, lectura1, DO de 14 rechazos insufficient_privilege, ROLLBACK, limpieza/identidad restaurada verificada; B1 probes passed and rollback cleanup confirmed, exit0. Autorización F2 de baseline/privilegios cubre estas pruebas B1; ninguna función C/D/E ejecutada.
+6. `-f /f/control/005_f2_inventory.sql` sin f_require_empty: identidad inalterada, roles/schema/ACL reales y cero relaciones no catalogales; F2 inventory passed, ROLLBACK, exit0.
+7. `-f /f/staged/verification/010_b1_metadata.sql`: repetición final metadata PASS, ROLLBACK, exit0.
+Cada entrada staged incluye preflight exacto inmediatamente antes de modificaciones; identity/SID/version verificados antes/después.
+
+Hashes SHA256 vigentes comprobados antes de ejecución:
+- 005_f2_inventory.sql:29E4C56B3E37F0480D5075ED8553B196B80B267274AF00CD79E22C8E4E35F1B0
+- staged/bootstrap/001_roles.sql:AF4A499B3E3005AA5965A544A1B205294F487E06BDB53C687C7CA166FD1E4255
+- staged/bootstrap/002_schema_privileges.sql:5C44D8315EA6E79E6AAF0945D68FF5C0A416DDC8277FEC92C80E3AE39140CBED
+- staged/verification/010_b1_metadata.sql:B96F013F387611A06EF3666E8A6B7FF52DC47D76714957E3EC9235768063D238
+- staged/verification/020_b1_effective_privileges.sql:936695ABF75398EC6A606DA27B54BD8CD7A4678C9C72600F6E6A0A6F7CF38702
+Check-F PASS antes/después, pins B1/A–E y 9/9 contratos. Comparación adicional original001/002 con sufijo staged: iguales exactamente tras reemplazo tomopedidos_local→tp_b2a_f_20261014_r01; solo prefijo preflight añadido. Originales sin cambios.
+
+Estado B1 real: tp_owner NOLOGIN/NOINHERIT y sin SUPERUSER/CREATEDB/CREATEROLE/REPLICATION/BYPASSRLS. Migrator/runtime LOGIN/NOINHERIT y mismos atributos privilegiados false. Bootstrap superuser inicial permanece independiente y dueño de DB F. Única membresía B1: migrator→tp_owner SET=true, INHERIT=false, ADMIN=false; runtime sin membresías. Schemas identity, tenancy, authorization, audit, migration_meta owner tp_owner. Runtime USAGE solo tenancy/authorization; ningún login CREATE schema. Ambos logins CONNECT en F, sin CREATE/TEMP DB. PUBLIC sin grants DB F ni acceso public/B1, sin EXECUTE por defecto en funciones futuras tp_owner. Defaults tablas/secuencias/funciones sin grantees ajenos al owner. Metadata detecta permisos inesperados y dependencias cruzadas, todas las aserciones aprobadas. PUBLIC conserva privilegios nativos de lectura en pg_catalog/information_schema, esperado en PostgreSQL, no grant extra B1.
+
+Negativos runtime reales mediante SET SESSION AUTHORIZATION dentro de conexión bootstrap (NO autenticación independiente): SELECT/INSERT/UPDATE/DELETE, CREATE tabla/TEMP/schema, ALTER/TRUNCATE tabla, nextval, función sintética, SET ROLE owner/migrator y ALTER ROLE owner LOGIN:14 rechazados. Objetos sintéticos retirados por ROLLBACK, ausencia comprobada en020 e inventario; sin cleanup de sesiones.
+
+F3: schemas vacíos y owner/delegación/search_path/defaultACL preparados; no tabla Goose creada ni comando Goose ejecutado. Credenciales independientes migrator/runtime todavía no provisionadas, no autenticación TCP de esos actores comprobada. Requiere autorización futura para credenciales/toolsbuild/Goose y comandos con -table migration_meta.goose_db_version; refrescar preflight e identidad antes. Spec nativo aún pendiente de enrollment para etapa de concurrencia. No bloqueos SQL de baseline. No migraciones B2-A, funcionesC/grantsD/cleanupE, recursos eliminados, principal/Celtas, deploy/commit/push. B2-A NO migrada ni verificada.
+
+## F3 — Up00001–00004 aplicado; PARADA por fixture SQLSTATE — 2026-10-14
+
+Alcance autorizado: credenciales independientes F migrator/runtime, autenticación real, construcción Goose, Up1–4 y verificaciones/negativos transaccionales. No Down, repetir B1, C/D/E, limpieza/eliminación Docker ni principal/Celtas. Git inicial conservaba únicamente cambios F2/evidencia anteriores; sin commit/push/historial modificado. Check-F PASS, fuentes originales/staged intactas. Inspección runbook, Compose tools, Dockerfile, migraciones y fixtures070/004/030. Las migraciones originales no se modificaron.
+
+SHA256 migraciones originales/staged idénticas:
+00001_identity_credentials.sql AC7CA512915A8290FE20D5A3003C30BCD78407AB55DCC630923A65EADDAF4258
+00002_audience_sessions.sql 13909AD7561780C9CC55A38A8B789A64D12C511E7A94BB4ACDA3036F12BB3F83
+00003_identity_guards_indexes.sql B1DC89967190A919E861F1B7FD77EB6E8EFCA9BA44DDA35B30C4D14AB7621B31
+00004_session_cleanup_index.sql 37BE379E0D91F8ACA0C75A36E6D4B0E39697B8EE9B219BDD479D8C52FF95E223
+004_migration_metadata.sql 227AC62AFAE822933303D0B7826EC6E52218A1DCC1366278596C457CABA6E1FC
+030_integrity.sql 57C59D7C72E68CFDA106D6B62B78941584F82618F5BFCC329E623FEA7DA916DF
+006_f3_state.sql 26BCB93902D6C35D6C649466E246F3CFEC038BDA509228EF74BCC17C2F92E27F
+031_runtime_ddl_negatives.sql F75304F4E829F7F0C4AC6EB2419F93E8A56D92E6AEA072F68026062876A3C5C6 (solo preparado, no ejecutado).
+
+Todas las invocaciones Docker se hicieron en exec_command independientes. `docker --context default version`: exit0 engine29.8.1. Inspecciones selectivas container/volume (nunca Env), network, image: exit0; nombres/IDs F1, proyecto, red interna/volumen exclusivos, sin puertos, exactamente dos binds F read-only + volumen propio. Snapshots f3-container/network/volume y f3-up{1,2,3,4}-{container,network,volume}.json guardados en .local/b2a-f, todos Assert-FDockerSnapshot PASS. Cada Up precedido de snapshots live y conexión bootstrap 001_preflight con SID exacto. Image/RepoDigest: sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c. Inventario005 previo PASS/ROLLBACK: PostgreSQL18.6, base tp_b2a_f_20261014_r01, SID7696590721605967915, schemas B1 vacíos, sin tabla Goose preexistente.
+
+Credenciales nuevas RNG48bytes cada una, distintas entre sí y de bootstrap, en .local/b2a-f/r01.tools.private.env (F_MIGRATOR_PASSWORD y F_RUNTIME_PASSWORD), Git ignorado y ACL protegida usuario exclusivo. No credenciales raíz/local leídas. Helper privado Invoke-F3PrivatePsql.ps1 inicia una única invocación Docker por ejecución con ProcessStartInfo/stdio redirigido; ningún password literal en argv. Provision ejecutó psql bootstrap -f - por stdin: preflight, BEGIN, \password migrator, \password runtime, COMMIT; exit0. Psql cifró contraseñas antes de ALTER, prompts sin secretos; helper redacta secretos incluso ante errores. Mecanismo aprobado \password conservado. Archivo privado nunca montado ni enviado al build.
+
+Autenticaciones reales: helper -Mode Migrator y -Mode Runtime inicia docker --context default exec -i tp-b2a-f-20261014-r01-pg sh -c [read PGPASSWORD desde stdin, export, exec psql -X -w -v ON_ERROR_STOP=1 -h127.0.0.1 -p5432 -d F -U actor -v f_actor=actor -v f_system_id=7696590721605967915 -f /f/control/fixtures/070_real_login.sql]. Antes de cada actor, nueva conexión bootstrap001_preflight PASS. Ambas exit0/NOTICE F real login context passed/ROLLBACK. session_user=current_user actor sin SET ROLE bootstrap; atributos no administrativos confirmados. No pruebas de password incorrecto ejecutadas en esta etapa.
+
+Prefijo Compose exacto:
+`docker --context default compose --env-file D:\tomopedidos\.local\b2a-f\r01.private.env --env-file D:\tomopedidos\.local\b2a-f\r01.tools.private.env -f D:\tomopedidos\tomopedidos-api\db\verification\f\compose.f.yaml -f D:\tomopedidos\tomopedidos-api\db\verification\f\compose.tools.yaml -p tp-b2a-f-20261014-r01 --profile tools`
+`build goose`: exit0; Goose v3.29.0 Dockerfile original, builder golang1.27-bookworm digest5cf287a799e6b94384bad13d16b14904c531f51ba65792237e122ce42b392f61; final debian bookworm-slim digest7c7b2c966bc9ee8cedfeef67e0e279108992c77681fa595db4a9d65c06ccc587. Imagen F goose manifest-list43576101bf21ba5cc31947ed339ba57fdf55cf9de909e606057215b32ba39717, config1741476a0d4dee16b6924dbbb32bd8dc4c76c151fee02bde076b63b6abac5281.
+Subcomandos posteriores (todos exit0; sin --rm para respetar prohibición de eliminar):
+- run --name tp-b2a-f-20261014-r01-goose-version --no-deps goose -version: v3.29.0.
+- run --name tp-b2a-f-20261014-r01-goose-validate --no-deps goose -dir /migrations -table migration_meta.goose_db_version validate: exit0.
+- run --name tp-b2a-f-20261014-r01-goose-up1 --no-deps goose -dir /migrations -table migration_meta.goose_db_version up-to 1: OK00001/versión1.
+- mismo patrón goose-up2/up-to2: OK00002/versión2.
+- mismo patrón goose-up3/up-to3: OK00003/versión3.
+- mismo patrón goose-up4/up-to4: OK00004/versión4.
+Los seis contenedores auxiliares F quedan conservados; Compose avisó orphan containers de los auxiliares previos, sin error ni eliminación/remove-orphans. DSN literal hostpostgres/redF/baseF/user migrator, options role=tp_owner y search_path=migration_meta,pg_catalog. Solo PGPASSWORD migrator en servicio Goose; runtime no enviado. Tabla Goose calificada resolvió correctamente incluso SET LOCAL search_path=pg_catalog en migraciones.
+
+Prefijo SQL bootstrap:
+`docker --context default exec tp-b2a-f-20261014-r01-pg sh -c 'PGPASSWORD=$POSTGRES_PASSWORD exec psql -X -w -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 5432 -U tomopedidos_bootstrap -d tp_b2a_f_20261014_r01 -v f_actor=tomopedidos_bootstrap -v f_system_id=7696590721605967915 [opciones]'`.
+Después de cada Up, `-v f_expected_version=N -f /f/control/006_f3_state.sql`: exit0, F3 version and ownership checks passed, ROLLBACK. Versiones persistidas0/1/2/3/4 todas is_applied=true. Tablas, índices, tabla/secuencia Goose owner tp_owner; ACL solo owner en tablas/secuencias/funciones, helpers SECURITY INVOKER y search_path pg_catalog,pg_temp. Cuatro tablas identities/identity_credentials/audience_revocations/sessions; nueve índices identity (cuatro PK, dos UNIQUE, tres índices adicionales); tres guards.
+`-f /f/control/004_migration_metadata.sql`: exit0, F Up4 metadata checks passed, 30 columnas y68 constraints PG18 (incluye30 NOT NULL, ademásCHECK/PK/UNIQUE/FK), ROLLBACK. FK RESTRICT observadas, índices ready/valid, tres triggers enabled, tablas sin RLS.
+
+FALLO Y PARADA: `-f /f/control/fixtures/030_integrity.sql`, exit1.
+`psql:/f/control/fixtures/030_integrity.sql:89: ERROR: F case identity_restrict_delete expected 23503, observed 23001`.
+El fixture realizó inserts positivos (identity activa, dos audiencias, credencial sintética, cuatro emails frontera, sesión), corpus emails y algunos negativos previos, pero NO terminó ni alcanzó su aserción final47/guards sesiones. No declarar corpus47 aprobado. La operación DELETE quedó rechazada por RESTRICT: incompatibilidad concreta entre expectativa fixture23503 y código real23001. No evidencia de fallo de integridad de la migración; no se cambió fixture ni código funcional. Corrección mínima propuesta para revisión: en030 línea89, expected SQLSTATE23001 para identity_restrict_delete; conservar23503 para inserts sin parent; revisar casos RESTRICT análogos. No aplicada ni reintentada.
+
+Después del error, SOLO reconciliación de lectura autorizada para registrar estado: nuevo007_f3_reconcile.sql y mismo prefijo -f /f/control/007_f3_reconcile.sql, exit0. Goose versión4; cuatro tablas con count0, guard DO y F3 failed fixture rollback: no persistent rows, ROLLBACK. El ROLLBACK explícito final030 no fue alcanzado: psql ON_ERROR_STOP cerró conexión con transacción fallida, PostgreSQL revirtió al desconectar; la conexión nueva confirmó ausencia persistente. Ningún Down ni reapply.
+
+031_runtime_ddl_negatives preparado pero NO ejecutado por parada; no declarar diez negativos administrativos/DDL de autenticación runtime aprobados. En F2 hubo14 negativos mediante SET SESSION AUTHORIZATION; no equivalen a este fixture real. Metadata sí confirmó ausencia de grants inesperados y ownership correcto en objetos recién creados.
+
+Archivos F nuevos006/007/031, manifiesto actualizado con estado parcial y pins, evidencia; helpers/credenciales/snapshots privados ignorados. F4 bloqueada hasta corregir/revisar expectativa del fixture con autorización y completar030/031/resto de checks F3. Migraciones originales intactas, B1 no repetido, C/D/E no aplicado, Down/cleanup no ejecutado, ningún recurso eliminado, sin principal/Celtas/deploy/commit/push. B2-A todavía NO completamente verificada.
+
+## F3 — reanudación y cierre de integridad/runtime — 2026-10-14
+
+Autorización específica: corregir solo expectativa RESTRICT del fixture si contrato real justifica23001 y completar verificaciones con rollback en F. No B1/GooseUp/Down/C/D/E/roles/credenciales/eliminación Docker. Git inicial conserva cambios F anteriores; sin commit/push. Docker default version exit0, engine29.8.1. Capturas live selectivas de contenedor/red/volumen, sin Config.Env, guardadas .local/b2a-f/f3-resume-{container,network,volume}.json. Cada invocación separada. Assert-FDockerSnapshot exit0 PASS: nombres/IDs/proyecto/digest aprobado, red interna exclusiva F, volumen propio, dos binds F read-only, sin puertos/privileged. Check-F exit0 antes y después: B1/A–E y cuatro migraciones originales sin cambios.
+
+Todas las consultas bootstrap usaron una invocación separada con prefijo exacto:
+`docker --context default exec tp-b2a-f-20261014-r01-pg sh -c 'PGPASSWORD=$POSTGRES_PASSWORD exec psql -X -w -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 5432 -U tomopedidos_bootstrap -d tp_b2a_f_20261014_r01 -v f_actor=tomopedidos_bootstrap -v f_system_id=7696590721605967915 [opciones]'`.
+Todas incluyen preflight existente: versión180006, cluster_name/base/actor/TCP/extensiones/ID exactos. SID7696590721605967915 intacto. No SQL contra tomopedidos_local/Celtas.
+
+1. -f /f/control/004_migration_metadata.sql: PASS exit0/ROLLBACK,30 columnas68 constraints, cuatro tablas/nueve índices/tres guards. Definiciones reales fk_identity_credentials_identity y fk_audience_revocations_identity (también fk_sessions_identity/fk_sessions_audience): ON UPDATE RESTRICT ON DELETE RESTRICT, NOT DEFERRABLE según migraciones/contrato. DELETE parent identity tiene referencias de credencial, audiencias y sesión; RESTRICT implica restrict_violation23001, distinto del foreign_key_violation23503 de insert sin padre. Resultado real anterior23001 queda respaldado por acción SQL vigente.
+2. Corrección EXACTA030 línea89: solo identity_restrict_delete cambia23503→23001. git diff confirma una línea. credential_fk y session_fk de inserción sin padre conservan23503. No relajación de matcher ni aserciones, migraciones/contratos funcionales no modificados. SHA256030 anterior57C59D7C72E68CFDA106D6B62B78941584F82618F5BFCC329E623FEA7DA916DF; nuevo034D31887B0238E6ADA16E669154B10F10B6ADCDA8D798179187F2AAEBB754AC. Pin correspondiente en f-manifest actualizado.
+3. -f /f/control/007_f3_reconcile.sql antes del fixture: versión4/cero filas en cuatro tablas, PASS/ROLLBACK/exit0, estado limpio.
+4. -f /f/control/fixtures/030_integrity.sql corregido: exit0; NOTICE F integrity corpus and guard checks passed; ROLLBACK explícito confirmado. Aserción final count47 aprobada:14 emails inválidos,13 negativos identity/credentials/audiences,13 CHECK/NOT NULL/FK de sesiones y7 guards de sesiones. Positivos: identity activa verificada+credencial sintética, dos audiencias, cuatro emails frontera (local64,label63,total254,dot/+), canonicalización lowercase, sesión admin válida y adición irreversible de marcas revoked/expired. Cinco identidades+dos audiencias+una credencial+una sesión insertadas solo dentro de transacción, sin COMMIT. PHC sintética verifica formato SQL, no Argon2id real.
+5. -f /f/control/001_preflight.sql: nueva conexión bootstrap PASS/exit0 inmediatamente antes de runtime.
+6. Helper privado .local/b2a-f/Invoke-F3RuntimeNegatives.ps1 -Mode Runtime: una única invocación docker exec -i con contraseña existente vía stdin (read/export PGPASSWORD), psql -U tomopedidos_runtime -h127.0.0.1 -dF -v f_actor=tomopedidos_runtime -v f_system_id=7696590721605967915 -f /f/control/fixtures/031_runtime_ddl_negatives.sql. Sin Provision ejecutado, roles/credenciales intactos. Conexión TCP real session_user=current_user runtime, sin SET ROLE bootstrap. Exit0, NOTICE F3 real runtime: ten administrative/DDL/data denials passed, ROLLBACK explícito. Diez rechazos42501: SELECTidentity, CREATEtableidentity/public/TEMP, CREATEschema, SETROLEowner/migrator, CREATErole, ALTERROLEownerLOGIN, SELECTGoosecontrol. Helper deriva transporte F3 existente y admite únicamente Runtime; archivo privado ignorado, sin contraseña literal ni logs secretos.
+7. -v f_expected_version=4 -f /f/control/006_f3_state.sql: PASS/exit0/ROLLBACK; registros0–4 is_applied=true, cuatro tablas/nueve índices/tres guards y tabla/secuencia Goose owner tp_owner. ACL sin grantees ajenos al owner; guards SECURITY INVOKER con search_path=pg_catalog,pg_temp. No grants adicionales a runtime/PUBLIC.
+8. -f /f/control/007_f3_reconcile.sql posterior: versión4 y count0 en identities/identity_credentials/audience_revocations/sessions; DO exitoso, ROLLBACK/exit0. Mensaje histórico 'failed fixture rollback' del007 es genérico de reconciliación; esta ejecución confirma rollback explícito de pruebas exitosas, no nuevo fallo.
+
+Resultado final F3:57 negativos aprobados (47 integridad+10runtime), positivos y metadata/ownership aprobados. Sin nuevos errores ni bloqueos de F3. Manifiesto actualizó estado F3 completada; evidencia y expectativa030 modificadas, helper/snapshots privados; ningún archivo funcional B1/A–E cambiado. F4 técnicamente preparada sobre versión4 y tablas vacías, requiere autorización independiente para C/D/E/roles posteriores y sus pruebas; concurrencia/retención todavía pendientes. No Goose invocado en esta reanudación, ni credenciales/roles cambiados, cleanup, contenedores eliminados, principal/Celtas, deploy/commit/push. B2-A NO completamente verificada.
+
+## F4-A — inspección y parada antes de Docker/SQL — 2026-10-14
+
+Autorización recibida para C/D solo F, roles ejecutores/caller y credenciales F, pruebas reales y evidencia. Identificadores autorizados: tp-b2a-f-20261014-r01-pg, tp_b2a_f_20261014_r01, SID7696590721605967915. NO se comprobó identidad live en esta sesión ni se ejecutó Docker/SQL.
+
+Inspeccionados role-provision, auth-grants, auth-enable,040, entradas/final C y preflight D,041 y fixtures060/061, runbook F. Check-F exit0 confirma pins C/D contra manifiestos, SQL/YAML9/9 y A–E/B1 sin cambios. Git conserva cambios F de sesiones anteriores; sin commit/push.
+Hashes staged previstos (no aplicados esta sesión): C1F5F490334896DBF56F43051EBA5C1AD0D66A4B7AE5DA970409A185E5E16D8BC; role-provisionFE394F4460E0CC0AC67371B5C54AF7116AC15EE7AFFFAAC9E8B339B5BF067805; auth-grantsE6CA634DDD0B4E997EFA4E1C775EBC7C58058CB7E14267FF3DA9904D534E3B10; auth-enableC4C5170C64253C4FAE381BD3D6EB5BE0B4C6525A6A6A2CA765B79A908EF4816A.
+
+Dependencia identificada: C inicial valida presencia de tomopedidos_auth_executor, tomopedidos_auth_revoke_executor y tomopedidos_auth_runtime; el orden reproducible del runbook es role-provisionD → Cinstall → Dgrants →040executors → Denable →040enabled. Provisionar roles antes de C es requisito aprobado del paquete, no ampliación de permisos ni cambio funcional.
+
+ERROR de inspección: comando `rg -n 'Order|orden|provision|install|compil|EXECUTE|CREATE ROLE' docs/runbooks/b2a-auth* docs/runbooks/b2a-f-disposable-verification.md`. Salida: `rg: docs/runbooks/b2a-auth*: El nombre de archivo, el nombre de directorio o la sintaxis de la etiqueta del volumen no son correctos. (os error 123)`. PowerShell no expandió el comodín de ruta para rg. La invocación contenedora terminó exit0 por Get-FileHash posterior; NO se interpreta como éxito de rg. El exit individual de rg no fue capturado. No reintento ni corrección del comando. Se aplica regla AGENTS 'Ante un error, detenerse, conservar evidencia y comunicar qué quedó pendiente, sin reintentos ni correcciones no autorizadas'.
+
+Estado real F4-A: ninguna modificación PostgreSQL, rol/credencial generado, función C instalada, grant D aplicado, prueba real ni identificación fresh ejecutada. Estado conocido anterior F3 versión4; no nueva comprobación. No E, Goose, B1, recursos eliminados, principal/Celtas, deploy/commit/push. Solo evidencia agregada. Pendiente reanudar inspección usando rg --glob sobre directorio, completar precheck identidad/ausencia parcial y aplicación C/D en orden aprobado. F4-B no preparada mediante verificación F4-A. B2-A NO completamente verificada.
+
+## F4-A — búsqueda corregida, C/D aplicados; PARADA en verificador041 — 2026-10-14
+
+Búsqueda fallida anterior `rg docs/runbooks/b2a-auth*` trataba wildcard como ruta literal en Windows; además runbooks reales se llaman b2a-function-lifecycle.md/b2a-role-isolation.md. Sustitución: `rg --files docs/runbooks -g '*b2a*'`, exit0, cuatro archivos; leídos lifecycle/isolation y F (orden pasos6–10). `rg -n -g '*.ps1' -g '*.md' 'rg .*\*' tomopedidos-api/db/verification/f docs/runbooks` sin coincidencias (exit1 significa no matches, no error); no mecanismo incompatible encontrado en scripts F, ninguno editado por búsqueda. No cambios de contratos funcionales.
+
+Autorización vigente C/D solo F. Check-F exit0 antes: contratos SQL/YAML9/9, source/body/ownership/grants pins C/D y staging, B1/A–E/migraciones intactos. Git conserva cambios F previos, sin commit/push. Archivos de credenciales F ignorados .local/; sin lectura de credenciales principal, sin secreto impreso. Los runbooks originales tienen estado histórico preparación; esta evidencia discrimina ejecución F real.
+
+Precheck live: invocaciones separadas Docker default version (engine29.8.1), inspect contenedor selectivo sinEnv, networkinspect, volumeinspect selectivo e imageinspect digest. Todas exit0. Snapshots privados f4a-container/network/volume.json; Assert-FDockerSnapshot PASS: IDs F1/nombres/proyecto correctos, red interna/volumen propios, dos binds F readonly, PortBindings vacío, sin privileged/puertos. Digest runtime y RepoDigest aprobado sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c. 005inventory PASS PostgreSQL18.6/SID7696590721605967915, roles solo B1, sinC/D;006state PASS versión4/sólo3guards owner tp_owner;007reconcile PASS cuatro tablasvacías. Todas readonly conROLLBACK. No estado parcial C/D previo.
+
+Hashes staged aplicados (pinned stage-manifest, fuentes C/D/YAML comprobados por Check-F):
+C b2a-auth-functions-v1.sql:1F5F490334896DBF56F43051EBA5C1AD0D66A4B7AE5DA970409A185E5E16D8BC
+D b2a-role-provision-v1.sql:FE394F4460E0CC0AC67371B5C54AF7116AC15EE7AFFFAAC9E8B339B5BF067805
+D b2a-auth-grants-v1.sql:E6CA634DDD0B4E997EFA4E1C775EBC7C58058CB7E14267FF3DA9904D534E3B10
+D b2a-auth-enable-v1.sql:C4C5170C64253C4FAE381BD3D6EB5BE0B4C6525A6A6A2CA765B79A908EF4816A
+Las copias F conservan cuerpos originales; destino/preflight F adaptados previamente, sin editar funciones en esta sesión.
+
+Prefijo SQL bootstrap exacto, una invocación Docker por script:
+`docker --context default exec tp-b2a-f-20261014-r01-pg sh -c 'PGPASSWORD=$POSTGRES_PASSWORD exec psql -X -w -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 5432 -U tomopedidos_bootstrap -d tp_b2a_f_20261014_r01 -v f_actor=tomopedidos_bootstrap -v f_system_id=7696590721605967915 [opciones]'`.
+Orden/resultados:
+1. -f /f/staged/administration/b2a-role-provision-v1.sql: tresCREATE ROLE, atributos/membresía/CONNECT asserts, COMMIT,exit0.
+2. -f /f/staged/administration/b2a-auth-functions-v1.sql: nueveCREATE FUNCTION/REVOKE/OWNER, source hash/SECURITY DEFINER/ACL owner-only asserts,COMMIT,exit0.
+3. -f /f/staged/administration/b2a-auth-grants-v1.sql: assertestado c PASS, grants mínimos por columnas, assert executors PASS,COMMIT,exit0.
+4. -v d_stage=executors -f /f/staged/verification/040_b2a_role_isolation.sql: firmas/parámetros/retornos/cuerpos/owners/defaultACL/grants/memberships/privilegiosPUBLIC/helpers PASS,ROLLBACK,exit0.
+5. -f /f/staged/administration/b2a-auth-enable-v1.sql: executorsPASS, CONNECT+USAGE+EXECUTE7, enabledPASS,COMMIT,exit0. Autorización explícita F4-A del usuario cubre enable para fixtures, no habilitación API/producción.
+6. -v d_stage=enabled -f /f/staged/verification/040_b2a_role_isolation.sql: enabled+PUBLIC/helper isolationPASS,ROLLBACK,exit0.
+7. -f /f/control/fixtures/060_auth_primitives.sql: nueve funciones ejercitadas en caminos reales con owners/executor permisos mínimos y callerSET LOCALROLE auth para fixtures sintéticas; SAVEPOINT por operación, paths de lookup/issue/validate/activity/logout/expiry/revokeaudience/revokeglobal/rehash y negativos stale/platform; NOTICE F nine primitive SQL paths passed,ROLLBACK,exit0. No prueba autenticación real por SETROLE; conexiones independientes descritas abajo. Revocaciones privilegiadas invocadas exclusivamente por administrador en fixture, no grantcaller.
+8. -f /f/control/fixtures/061_fail_closed.sql: nueve escenarios disabled/missingaudience/revoked/malformeddigest/crossaudience/globaloverflow/audienceoverflow/revisionoverflow/staleCAS; NOTICE F fail-closed checks passed,ROLLBACK,exit0. Compilación e invocación PLpgSQL de las nueve funciones probadas por estos fixtures, no certificación de todos los caminos posibles/Go/criptografía.
+
+Roles persistidos: tomopedidos_auth_executor y tomopedidos_auth_revoke_executor NOLOGIN/NOINHERIT, sin atributos administrativos ni membresías; tomopedidos_auth_runtime LOGIN/NOINHERIT, sin atributos administrativos ni membresías. Siete funciones normales owner normalexecutor; dos revoke_audience/revoke_global owner revokeexecutor. No aliases privileged añadidos. Todos SECURITY DEFINER, VOLATILE, PARALLEL UNSAFE, noLEAKPROOF, search_path fijo pg_catalog,pg_temp, firmas y source hashes exactos. Ejecutores USAGEidentity +15 grupos de columnas mínimos; normal noepochUPDATEidentities/audiences, revoke sincredentialaccess. Sin permisos tabla completos niDELETE. Antesenable caller sinCONNECT/USAGE/EXECUTE. Después auth CONNECT+USAGEidentity+EXECUTE sólo7; sinDMLdirecto/CREATE/TEMP/SETROLE. Revocacionesowner-only, auth/tenant/PUBLIC sinEXECUTE; PUBLIC sinACLDB/schema/functions, tenant sinaccesoidentity. Asserts de040 verifican derechos efectivos, no solo textoGRANT.
+
+Auth secret nuevo RNG48bytes, independiente de bootstrap/migrator/tenant por comparación local; .local/b2a-f/r01.auth.private.env, ignorado Git, ACL protegida usuarioexclusivo. Helper privado Invoke-F4PrivatePsql.ps1 (sinsecretliteral) configura vía psql\passwordauth dentro BEGIN/preflight/COMMIT usando stdin/redacción; ModeProvisionexit0. No otros roles/credenciales cambiados. Nuevas conexiones bootstrap001preflight antes de cada login/caller.
+Real login auth: helper -Mode Auth -Test Login, psql070TCP conusuarioauth, NOTICE real login context passed/ROLLBACK/exit0.
+Real login tenant: helper -Mode Tenant -Test Login, psql070TCP usuario tomopedidos_runtime, NOTICE real login context passed/ROLLBACK/exit0.
+Cadahelper inicia una sola llamada docker --context default exec -i ... sh -c [read/export PGPASSWORD stdin,execpsql -X-w-ON_ERROR_STOP-h127-dF-Uactor-farchivo]; noSETROLEbootstrap como sustituto, ningún secretargv/log.
+
+ERROR Y PARADA: helper -Mode Auth -Test Negatives → /f/staged/verification/041_b2a_caller_negatives.sql:
+`psql:/f/staged/verification/041_b2a_caller_negatives.sql:84: ERROR: syntax error at end of input`
+`LINE 56: ...nt <> CASE session_user WHEN 'tomopedidos_runtime' THEN 33 E...`
+DockerExit3; comandoenvolvente PowerShellexit1. BEGIN/SET/contextDO ejecutados; bloqueDOnegative no compila, por tanto0negativos041ejecutados, ni26auth ni33tenant aprobados. Tenant041 NOintentado. Problema idéntico en original041línea76/stagedlínea79: `IF v_count <> CASE session_user WHEN 'tomopedidos_runtime' THEN 33 ELSE 26 END THEN`. Propuesta mínima: parentetizar CASE (`IF v_count <> (CASE ... END) THEN`) en verificador auxiliar y derivadoF, actualizar pins de verificadores, sin cambiarC/D/grants. NOcorrección ni reintento realizados. Es incompatibilidad del verificadorPLpgSQL, no error de instalaciónC/D.
+Original041 SHA256397C8C8D30259E9377E554BB6B18D47E13580BF8C981AD1931BA993AE20C2E0A; staged0414AED1AEABFC06F556D25EAB69862128CF7258CEA0F0D015960950AD281A120E6.
+
+Traserror SOLOlecturas de reconciliación:007reconcile exit0/ROLLBACK, versión4/cuatrotablascount0;040enabled exit0/PASS/ROLLBACK afirma C/D persisten correctos y permisosintactos. Conexión041cerrada abortó transacción; suROLLBACKfinal noalcanzado. No C/Dreapply ni disable/grantsfix/Goose/B1/E/cleanup. Los COMMIT administrativos y passwordauth anteriores sí persistieron; NOrepetirprovision/install/enable alretomar.
+
+Archivos funcionalesC/D/B1/A–E no modificados; sólomanifiestoF conestado parcial/evidencia, helpers/secret/snapshots privados. F4-B bloqueada por041negativos y verificaciones reales pendientes (positivos por conexiónauth real ademásfixturesowner). Pruebasestáticas/metadatosPUBLIC sípasaron, pero negativosauth/tenant completosNO. B2-A NOcompletamenteverificada; sinprincipal/Celtas/eliminaciónrecursos/deploy/commit/push.
+
+## F4-A — cierre041, 59 negativos reales aprobados — 2026-10-14
+
+Autorización específica corregir sintaxis auxiliarCASE y reejecutar041/comprobaciones finales exclusivamenteF, sin reinstalarC/D ni cambiargrants/roles/credenciales. Revisado CASE completo: session_user='tomopedidos_runtime'→33, ELSE→26, ambas ramasinteger, v_countinteger. Corrección EXACTA en copia ejecutableF staged/verification/041_b2a_caller_negatives.sql línea79: `IF v_count <> CASE session_user WHEN 'tomopedidos_runtime' THEN 33 ELSE 26 END THEN` → `IF v_count <> (CASE session_user WHEN 'tomopedidos_runtime' THEN 33 ELSE 26 END) THEN`. Paréntesis hacen la expresión inequívoca para parserPLpgSQL; cantidades/listas/captura42501/reglas intactas. No cuerposC/grantsD ni original041 modificados: copiaoriginal aún contiene sintaxis histórica fallida y necesitará corrección auxiliar aparte antes de eventual ejecución fueraF. No se usa original en esta verificación.
+
+SHA256 staged041 previo4AED1AEABFC06F556D25EAB69862128CF7258CEA0F0D015960950AD281A120E6; corregido789198EA36F59FFFBD29DEDFA520658BB452C87829119D0B040665B643CB6CFA. stage-manifest solo actualizó staged_sha256 correspondiente y anotó correcciónsyntaxonly, source_sha256 original intacto. f-manifest repinó041/stage-manifest y actualizó estado cierre; no repin ciegoC/D. Check-F PASS antesejecución y cierre, todasmigraciones/B1/A–E originales sin cambios.
+
+Docker cada invocación enexec_command independiente: defaultversionexit0; inspectselectivocontenedor sinEnv/network/volumeexit0, snapshots .local/b2a-f/f4a-close-{container,network,volume}.json; Assert-FDockerSnapshotPASS (IDsF1/proyectoF/redinternal/volumenexclusivo/mountsreadonly/sinpuertos). SQLidentificación000exit0 con BEGINREADONLY/DO/fila/ROLLBACK: SID7696590721605967915, DBtp_b2a_f_20261014_r01, cluster_nametp-b2a-f-20261014-r01, version180006, TCP127.0.0.1:5432. DigestConfig.Image/Image sigue aprobado en snapshot; no recursos nuevos/eliminados.
+
+Prefijo SQLbootstrap exacto:
+`docker --context default exec tp-b2a-f-20261014-r01-pg sh -c 'PGPASSWORD=$POSTGRES_PASSWORD exec psql -X -w -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 5432 -U tomopedidos_bootstrap -d tp_b2a_f_20261014_r01 -v f_actor=tomopedidos_bootstrap -v f_system_id=7696590721605967915 [opciones]'`.
+Orden/resultados:
+1. -f /f/control/000_identify.sql: identidadPASS/ROLLBACK/exit0.
+2. -f /f/control/001_preflight.sql: PASS/exit0 inmediatamente antesauth.
+3. Helper privadoexistente Invoke-F4PrivatePsql.ps1 -Mode Auth -Test Negatives: conexiónTCP real tomopedidos_auth_runtime usando passwordexistente viastdin/readPGPASSWORD, psql -f /f/staged/verification/041_b2a_caller_negatives.sql conactor/SIDF. BEGIN/SET/contextDO/negativesDO/ROLLBACK, NOTICE D real caller negatives passed: actor tomopedidos_auth_runtime,count26, DockerExit0/toolExit0. SinSETROLEbootstrap como sustituto de login.
+4. -f /f/control/001_preflight.sql: bootstrapfreshPASS/exit0 inmediatamente antetenant.
+5. Mismohelper -Mode Tenant -Test Negatives: loginTCP real tomopedidos_runtime, NOTICE count33, BEGIN/DO/ROLLBACK, DockerExit0/toolExit0. Ningún Provision ni cambiosecret ejecutado.
+6. -v d_stage=enabled -f /f/staged/verification/040_b2a_role_isolation.sql: metadatos/firmas/owners/sourcehash/ACL/grants/memberships/privilegiosefectivosPUBLIChelpersPASS,ROLLBACK,exit0.
+7. -f /f/control/007_f3_reconcile.sql: versiónGoose4 y counts0identities/identity_credentials/audience_revocations/sessions; DOassertPASS/ROLLBACK/exit0. Marcador histórico failedfixture del007 no significa nuevofallo; se utilizó para reconciliación final.
+
+59negativos041 aprobados total(26auth+33tenant), cada rechazoinsufficient_privilege42501. Incluyen DMLdirecto protegido,DDL, grants/membresías/SETROLE y dosrevocacionesprivilegiadas; tenantademás7funcionesnormalesdenegadas. PUBLIC se verifica comograntee0 en040/ACL, no es rolLOGIN ni se inventa conexiónPUBLIC. Permisosfinalesintactos: authCONNECT+USAGEidentity+EXECUTE7normales; sinDMLdirecto/CREATE/TEMP/memberships; revocationsrevoke_audience/revoke_global owner-onlyrevokeejecutor, denegadasauth/tenant/PUBLIC; tenant sinfuncionesC/datosidentity; NOLOGINejecutoresmínimos. Nuevefunciones/roles/grants persistentes de sesiónprevia no reinstalados; no cambiosfuncionales.
+
+F4-A cerrada paraalcanceautorizado. Cfixture060 nuevepaths y061 nuevefailclosed habíanpasadoen sesiónanterior; sus fixturesconSETROLE no prueban login, ahora autentificación/negativosreales acreditados. CaminospositivosfuncionalesconconexiónauthTCP/datossembradosindependientes, concurrencia,search_pathhostil,commitambiguo yE siguen etapasposteriores; no afirmar coberturaexhaustivaGo/criptografía. F4-B técnicamentepreparada, requiereautorización específica. Sinbloqueosnuevos en cierre041. SinB1/GooseUpDown/C_Dreapply/E/cleanup/principal/Celtas/recursoseliminados/deploy/commit/push. B2-A NOcompletamenteverificada.
+
+## F4-B — E aplicada y retención/cleanup sintético verificados — 2026-10-14
+
+Autorización limitada E soloF; roles/credencial propios, scripts administrativos, fixtures/negativos y cleanup exclusivo sintético. Sin F5/concurrencia, B1/C/Dreinstall, GooseUpDown o datos externos. Runbookretención/roles/install/enable/assert/052/050/071 revisados, incluyendo Down/disable (NOejecutados). Check-F PASS pins originalesE/dependenciasC/D/B1/migraciones, SQL/YAML9/9. Snapshotlive selectivo Dockerdefault container/network/volume, sinEnv, .local/b2a-f/f4b-*.json; Assert-FDockerSnapshotPASS. ContenedorIDs/proyecto/redinternal/volumenexclusivos, dosbindsreadonly, sinpuertos/privileged; Config.Image y Image runtime aprobado sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c. Dockerengine29.8.1/versionexit0, cadaDockerinvocación exec_command separada.
+
+PrecheckSQL000identifyexit0/ROLLBACK: DBtp_b2a_f_20261014_r01, SID7696590721605967915, cluster_nametp-b2a-f-20261014-r01, PG180006, TCP127.0.0.1.005inventory confirma23roles(B1/C/D;sinE),007reconcile versión4/cuatrotablasvacías,040enabledPASS. Nuevo008_f4b_pristine read-only confirma nirolesE nifuncióncleanup_sessions existente, PASS/ROLLBACK. No instalaciónparcial.
+
+SHA256 staged paquetesE:
+role-provision4A0AF82620EF428FF11B2FD2D39A372FFDFDE6A70D9AAA61D23E1F54B73F1F49
+install5EBC1BB9AEE0D458AD1743560C61FD2A5F043A9EC1FCD7ACC4FEDC30C9F8CE67
+enableF52B6D3655E7ADCCA7A20D18A8998CBFE27423254538D2706C35F9733001622A
+assert43D461BFFB38B4997D5ADB3EA7B85CA88E7A8266D50F44D9ACE8819A045D0B6A
+fixture05082DC2C4C1B11EA617C686AE7315B8F56EB02DCFA691A49A45C175036E462A0D7
+053fullbatch5F1249FD98C9DE599FE1DEEAE2D4970AD6DBCF7551729A489047D374D02F18AE
+073realmaintenanceEE616A375587FE0E8FE39976A833151A9F1711A4F8250D4078D0C01EF1676E43
+074deniedE02F162BD5B9E206AFD9465594835E7D3E13F5692C518BD8DFC917B3BAD1D32D
+
+Prefijo SQLbootstrap (cadaarchivo separado, preflight enentradas):
+`docker --context default exec tp-b2a-f-20261014-r01-pg sh -c 'PGPASSWORD=$POSTGRES_PASSWORD exec psql -X -w -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 5432 -U tomopedidos_bootstrap -d tp_b2a_f_20261014_r01 -v f_actor=tomopedidos_bootstrap -v f_system_id=7696590721605967915 [opciones]'`.
+Ordenaplicación real:
+1. -f /f/staged/administration/retention/b2a-cleanup-role-provision-v1.sql: CREATE ROLE×2/COMMIT/exit0.
+2. -f /f/staged/administration/retention/b2a-session-cleanup-v1.sql: CREATE FUNCTION/owner/grantscolumn+DELETEsessions, assertionsD enabled/E dormantPASS/COMMIT/exit0.
+3. -v e_stage=dormant -f /f/staged/verification/052_b2a_cleanup_metadata.sql: PASS/ROLLBACK/exit0.
+4. -f /f/staged/administration/retention/b2a-cleanup-enable-v1.sql: dormantPASS→CONNECT/USAGE/EXECUTEmaintenance→enabledPASS/COMMIT/exit0. Habilitaciónsolo fixturesF autorizados, nojob/producción.
+5. -v e_stage=enabled -f /f/staged/verification/052_b2a_cleanup_metadata.sql: firma/default100/bodyhash/owner/ACL/index/matrizprivilegiosPASS/ROLLBACK/exit0.
+6. -f /f/staged/verification/050_b2a_retention_concurrency.sql: NOconcurrencia externa pesealnombre; scriptsecuencial ochofixtures/DO/savepoints. E retention fixtures,batch bounds androllback checks passed,ROLLBACK/exit0.
+
+Resultados ocho sesiones sintéticas de050, usando t=relojcapturado:
+| n | Caso | Resultado cleanup100 |
+|---|---|---|
+|1|Vencimiento natural hace40d12h|Eliminada|
+|2|Vencimiento natural hace1d12h|Conservada|
+|3|Sesiónvigente|Conservada|
+|4|Epochsnapshotobsoleto pero sinvencimiento|Conservada|
+|5|Epochsnapshotobsoleto y natural hace40d12h|Eliminada|
+|6|Detecciónexpired_at=t tardía, natural hace40d12h|Eliminada|
+|7|Revoked_at hace40d18h anterioranatural|Eliminada|
+|8|Creaciónhace31d, terminalidadnaturalhace24d12h|Conservada|
+Límite100 sobreocho:examined4/deleted4/skipped0, survivors2/3/4/8; identityepoch1/dosaudienciasintactos. ROLLBACK TOsavepoint restauró8,assertPASS. Batch1examined1/deleted1; inválidosNULL/0/-1/101 rechazados22023, segundallamadamismaTXrechazada25000. Aritméticafronteraexacta30d/inclusiva y+1microsegundo/NULL semanticsPASS. Creaciónnoancla, primera terminalidad LEAST, epochsnosimulanfechaterminal. No statement cleanup fueraF niDELETECOMMIT.
+
+CredencialmaintenanceF RNG48bytes independiente de bootstrap/auth/migrator/runtime porcomparaciónlocal; archivo .local/b2a-f/r01.maintenance.private.env ignoradoGit/ACLusuarioexclusivo. Helpers privados Invoke-F4Maintenance.ps1/Invoke-F4CleanupDenied.ps1 derivadostransporteprevio, una sola llamadaDockercadaejecución, payloadstdin/redacciónpassword, nuncaargv/SQLvisible. ModeProvision ejecutó preflight/BEGIN/psql\passwordtomopedidos_session_maintenance/COMMIT,exit0. No cambiosC/Dcredenciales/grants.
+Conexionesreales mantenimiento, cadaunaprecedidafreshbootstrap001preflight:
+- -Mode Maintenance -Test Login →070real_login: autenticaciónTCPactorreal,PASS/ROLLBACK/DockerExit0.
+- -Test Negatives →071maintenance_negatives:12rechazos42501/PASS/ROLLBACK/DockerExit0 (tabla/credencial/delete/epochDDL/SETROLEowner/executores/funcionesauth/revocations).
+- -Test NormalFunctions →nuevo073realmaintenance: cleanup100sobrebasevacía examinó/eliminó/skipped0, ejecuciónfuncióncomoLOGINmaintenance,PASS/ROLLBACK/exit0. NoSETROLEbootstrap comoautenticación.
+
+7. Nuevo053_cleanup_full_batch.sql porbootstrapconactorSETLOCALROLEmaintenanceúnicamenteparafixture: insertidentity+audiencia+credencialsintéticas y101sesioneselegibles; cleanup100examined100/deleted100/skipped0; quedósesión101. Assertpadres/credencial/epochidentity0/epochaudiencia0 intactos. NOTICE F full100 batch passed100deleted1retained,ROLLBACK/exit0. Compilación/invocaciónfunctionownercongrantsmínimos aprobada. PruebaROLEfixture no seinterpreta comologin; loginreal/executevacío acreditadosaparte.
+- Authreal ytenantreal con Invoke-F4CleanupDenied.ps1 -Mode Auth/Tenant -Test Negatives →nuevo074cleanupdenied, preflightfreshantesdecadauno: cleanup1 rechazado42501,NOTICE/PASS/ROLLBACK/exit0. PUBLICnoLOGIN, denegaciónaclexplodegrantee0 y has_function_privilege verificadasen052.
+8. 052enabledfinalPASS/ROLLBACK/exit0,incluyeDassertenabledintacto.
+9. 007reconcilefinalPASS/ROLLBACK/exit0:Goose4,cuatrotablascount0. Mensajehistóricofailedfixture noindicanuevofallo.
+
+Roles/privilegios reales: tomopedidos_cleanup_executor NOLOGIN/NOINHERIT,sinatributosadmin/membresías,owner identity.cleanup_sessions(integer DEFAULT100) SECURITY DEFINER consearch_pathfijo; USAGEidentity, SELECTid/UPDATEididentities ySELECTkeys/UPDATEaudienceaudiences sólolocks, SELECT9metadatossessions/UPDATEsession_idlocks/DELETEsessions. NoPHC/token/CSRF/epochaccess. MaintenanceLOGIN/NOINHERIT,sinatributosadmin/membresías; CONNECTF/USAGEidentity/EXECUTEcleanupúnicamente,ningúnDMLdirecto/DDL/funcionesC/secuencias. Auth/tenant/migrator/PUBLIC sinEXECUTEcleanup, grantsC/Dconservados. NoDELETEidentities/credentials/epochs/audit enfunción; fixture100verificócredential/parents/epochsintactos. No objetosaudit persistentes creados/modificados.
+
+TodaseliminacionessessionsentestsfueronROLLBACK,noDELETEconCOMMITniirreversibilidadpersistente probada. COMMITs administrativossípersisten(Eroles/install/enable/password). No051fallosadicionales niF5spec/concurrenciastress/reloj/commitambiguo ejecutados. F4-B completada dentroalcance; sinerroresniresiduos. F5pendienteautorización/herramientas/native-specenrollment/expectedoutputsreales. Nuevos008/053/073/074 ymanifestF/evidencia; originalesB1/A–E/C/D/migracionesintactos. SinGoose/B1/C_Dreinstall/cleanupfueraF/Celtas/principal/eliminaciónDocker/deploy/commit/push. B2-A NOcompletamenteverificada.
+
+## F5-A — harness de concurrencia y fallos preparado, sin SQL — 2026-10-14
+
+Alcance autorizado: inspección de herramientas, escritura F5 y compilación/tests offline. No carreras SQL, fault injection, cleanup ni cambios PostgreSQL en esta sesión. B1, migraciones, C/D/E y specs originales se conservaron. El estado dinámico de referencia es F4-B; la identidad SQL actual no se volvió a consultar en F5-A. Una ejecución futura exige snapshots físicos frescos y preflight real, no este informe.
+
+Herramientas inspeccionadas: `go version` → go1.27.2 windows/amd64. `docker --context default exec tp-b2a-f-20261014-r01-pg find /usr/lib/postgresql/18 -name isolationtester -type f` → ruta /usr/lib/postgresql/18/lib/pgxs/src/test/isolation/isolationtester, exit0. Segunda invocación Docker separada, mismo contenedor, binary -V → isolationtester (PostgreSQL)18.6 (Debian18.6-1.pgdg12+2), exit0. Ninguna de estas llamadas abre conexiones SQL. No instalación ni compilación de PostgreSQL necesaria. No psql Windows disponible; el harness usa clientes/herramientas del contenedor.
+
+Fuente primaria revisada: https://github.com/postgres/postgres/blob/REL_18_6/src/test/isolation/isolationtester.c. La herramienta establece una conexión por session más supervisor y detecta bloqueos con pg_isolation_test_session_is_blocked. No opción dry-run: solo -V es inocua; no se invocó el parser nativo con ningún spec. El tester puede imprimir error SQL y continuar pasos actuales y salir0, por eso el wrapper procesa una sola permutación por invocación y rechaza capturas con errores/completitud incorrecta. El éxito de captura queda CAPTURED_NOT_APPROVED hasta revisión contra matriz y reconciliación; no se inventaron expected outputs reales.
+
+Artefactos nuevos control/f5: módulo Go standalone go.mod mínimo1.26.0, main.go, proxy.go, harness_test.go, cleanup12.spec, auth9.spec, locks2.spec, 101_observe_fault.sql, 102_statement_timeout.sql, manifest.json, README.md, MATRIX.md y .gitignore. Manifest F actualizado con pins y estado F5-A preparado. Binarios Windows/Linux en bin/, ignorados Git; captures/ también ignorado. Sin dependencias externas, sin cambios al módulo Go API ni descarga de drivers/toolchains. El runner nativo fija contexto default, contenedor F, host127.0.0.1/5432/baseF/bootstrap/sslmode y control-ID; no opción DSN/host alternativo. Requiere recibo privado de identidad real de <=30s, contenedor ID completo aprobado, recursos exclusivos/sin puertos/version4. Ese recibo es evidencia del operador confiable, no defensa contra un administrador que lo falsifique. Specs repiten guard de identidad antes del setup y exigen cuatro tablas vacías.
+
+Doce permutaciones E originales revisadas. La copia staged todavía contenía __F_SYSTEM_ID_PENDING__; Prepare-FStage -RefreshEnrollment podría chocar con staged041 corregido. No se ejecutó ni regeneró staging. Se creó copia F5 independiente con SID7696590721605967915 y guard de estado vacío. Se añadieron nueve escenarios auth (validación/logout ambos órdenes, validación/global epoch ambos órdenes, doble renovación, doble logout, rehash/validación ambos órdenes, timestamps futuros/fallo cerrado) y dos multi-identidad cleanup (commit/rollback del primer lote y espera del segundo). Total23 preparados,0 ejecutados. Los specs usan datos UUID e2/e4 exclusivos, emails .invalid, PHC léxico y digests sintéticos. Setup/teardown de native COMMIT: futuras pruebas requieren autorizar explícitamente esos datos y su retirada por ID, no cleanup global.
+
+MATRIX documenta resultados observables, waits requeridos o compatibles, state assertions y survivors. No pg_sleep. Barreras nativas dependen de bloqueos PostgreSQL detectados, no sleeps de coordinación. Rehash no cambia auth_epoch; doble logout conserva terminalidad y devuelve invalid al segundo; doble renovación permanece dentro de idle/absoluto; global epochs no cambian snapshots ni retención. Clock fixture modifica solo timestamps sintéticos, no reloj host/DB; VM/time virtualization real pendiente. Los specs de bootstrap/SET LOCAL ROLE son concurrencia SQL, no sustituyen autenticación independiente acreditada en F4.
+
+Fault harness separado: proxy Go Linux, sólo hostname del contenedor F4218b22fbb21, loopback127.0.0.1:5433→5432, un cliente maintenance/baseF/application_name exactos, receipt fresco, timeout30s, límites de frames, rechazo startup alternativo/options y extended query. Sin publicación de puertos ni recursos Docker nuevos. Modalidades: before-commit no reenvía Q(COMMIT); drop-ack observa backendCommandComplete(COMMIT), lo oculta al caller y desconecta. Nunca imprime wire payload/passwords. Ambos dejan outcome unknown al caller y requieren reconciliación fresca096, sin reintentar cleanup. Proxy evento sin estado final no aprueba commit: sólo filas0 (o filas2 tras rollback) y padres intactos sustentan el efecto observado. Sin inyección ni proxy arrancado en F5-A.
+
+Fault fixtures090–097 existentes revisados, no ejecutados. Observador101 prepared READ ONLY filtra DB/app/PID; nuevo102 statement timeout1s menor que lock timeout5s requiere holder091 bloqueado antes de lanzar maintenance. 092 espera55P03; 093/094 cancellation57014 sólo PID F revalidado. 051 atomicidad/clock/isolation preparado para futuro (no ejecutado aquí). Los SQL de fallos esperados no se declaran aprobados por exit: se requiere SQLSTATE, rollback/desconexión y estado reconciliado. Detener no significa borrar Docker: no down/rm/prune. Interrupción de Docker CLI no acredita fin de backends; recuperar sólo PIDs capturados/F exacto con autorización y retirar sólo UUID propios después de evidencia.
+
+Verificación offline final: GOTOOLCHAIN=local, GOPROXY=off; go test -count=1 ./... exit0 (7 tests, sin sockets/conexiones PostgreSQL), go vet ./... exit0; go build -mod=readonly para Windows y GOOS=linux/GOARCH=amd64 exit0. f5harness.exe -mode check -root . PASS pins/target23perm, sin Docker/SQL. Check-F PASS original9/9C, D/E hashes/dependencias, migraciones byte-identical y staging. git diff --check exit0, binarios check-ignore aprobado.
+Hashes binarios finales: Windows3DCF495CFB48D8BAF80E6995F966D929777B3ADF2E7681E02C15993473FEC46E; Linux7987FA97CC88935348C5DDA919DAEB12150805983CC8463C4EE383B17A1FBA2E. No secretos incluidos en fuentes/pins/binarios. Durante desarrollo se corrigió falso rechazo del texto SQL 'failed' y un string Go de test con newline no escapado (test inicialmente no compiló); corrección autorizada exclusivamente del harness, repetición final aprobada. Sin SQL ni ajustes funcionales para hacer pasar pruebas.
+
+Comandos futuros no ejecutados: README contiene ejecución native por spec/case con token explícito F5_NATIVE_ONLY_7696590721605967915 y receipt fresco; proxy usa token distinto F5_FAULT_ONLY_7696590721605967915, maintenance psql -W por loopback interno, seed090/reconcile096/teardown097 separados. Tokens no sustituyen autorización del usuario. Ningún runner hace loop, retry ni aprobaciones automáticas. Expected outputs, parse/compilación SQL nativa, sincronización observada, protocolo SCRAM/ACK real y recuperación de fallos quedan para F5-B.
+
+Backend Go pendiente: prueba de contraseña/Argon2id y rehash equivalente, CSRF/keyring/MFA/recent-auth, HTTP/pools/context cancellation/retry y representación de outcome unknown. El harness SQL no certifica esos componentes ni implementa auth API. F5-A preparada, no B2-A completamente verificada. No Goose, B1, C/D/E modificaciones, PostgreSQL races/inyecciones, principal/Celtas, recursos eliminados, deploy/commit/push.
+
+## F5-B — 23 permutaciones SQL ejecutadas y aprobadas — 2026-10-14
+
+Autorización recibida para las23 carreras preparadas, datos sintéticos/locks/cleanup y aserciones sóloF. No proxy, fallos/desconexiones/cancelación deliberadas ni reloj del sistema. No correcciones de harness necesarias en esta ejecución. C/D/E, B1, migraciones y specs permanecen intactos.
+
+Precheck real: Docker default version29.8.1/exit0; inspect selectivo contenedor(sinEnv), network y volume por llamadas independientes; Assert-FDockerSnapshot PASS. Nombres/proyecto/IDs/digestF aprobados, red internal/volumen exclusivos, sin puertos publicados, mounts sólo staged/control read-only+volumen.000identify BEGIN READONLY/DO/ROLLBACK/exit0: base tp_b2a_f_20261014_r01, SID7696590721605967915, cluster_name tp-b2a-f-20261014-r01, PG180006/TCP127.0.0.1:5432.052enabled confirmó source hashes/firmas/owners/ACL y D/E enabled;007 confirmó Goose4/tablasvacías. Check-F y F5modecheck PASS pins antes de SQL. Binario Windows coincidió al cierre con SHA F5-A3DCF495CFB48D8BAF80E6995F966D929777B3ADF2E7681E02C15993473FEC46E; ese hash de binario se comparó después de carreras, no se presenta como comparación previa. Fuentes/specs/manifiestos se comprobaron antes y después.
+
+MATRIX revisada antes de ejecutar. Orden de ejecución: locks2 casos1,2; auth9 casos1,2,5,6,3,4,7,8,9; cleanup12 casos11,1,2,3,4,5,6,7,8,9,10,12. Así locks multi-parent primero, luego logout/renovación/epoch/credencial y cleanup/retención. Cada caso fue una invocación independiente, revisada antes del siguiente; ningún loop de ejecución ciega ni retry.
+
+Antes de cada caso posterior al primero, nuevas inspecciones live C/N/V enexec_command independientes y Assert-FDockerSnapshot,007reconcile/preflight exitoso (SID exacto y versión4/tablasvacías), receiptUTCfresh<30s en .local/b2a-f/f5b-live.json. Snapshots .local/b2a-f/f5b-{2..23}-{container,network,volume}.json, además inicial f5b-*.json. Nunca Config.Env ni passwords impresos.
+
+Comando runner por caso (invocado en control/f5, sustituir SPEC/N sólo por tabla de resultados):
+`./bin/f5harness.exe -mode native -root . -spec SPEC -case N -receipt D:\tomopedidos\.local\b2a-f\f5b-live.json -approval F5_NATIVE_ONLY_7696590721605967915`.
+Cada runner lanzó exactamente una invocación `docker --context default exec -i tp-b2a-f-20261014-r01-pg sh -c [PGPASSWORD=$POSTGRES_PASSWORD PG_TEST_TIMEOUT_DEFAULT=10 exec isolationtester CONNINFO_F_fijo]`, stdin spec pinned con una sola permutation. Host127/port5432/baseF/bootstrap/optionssearch_pathpg_catalog/sslmodedisable/application_nameF:f5 fijados, sin overridesDSN. Native3/4sessions más supervisor, conexiones independientes, SETLOCALROLE fixturesadmin/auth/maintenance/revokeexecutor; no sustituyen pruebas loginreal F4. Todas invocaciones exit0 y capturas completas sin ERROR/FATAL/PANIC/setupfailure/deadlock/timeout.
+
+CAPTURED_NOT_APPROVED fue revisado individualmente: secuencia startingpermutation, esperas<waiting...>/<...completed>, valores result/counts y DOestadofinal. Unusedstepname warnings esperados al filtrar una sola permutation; no falla del parser. No golden nuevo aprobado automáticamente. Resultados individuales con tiempos y hashesreferenciados en control/f5/F5B_RESULTS.md y F5B_RESULTS.json.23archivos*.actual conservados en captures/ignoradoGit; CAPTURE_HASHES.txt contiene SHA256 de cada captura. Tiempo total23invocaciones18.0508514s, cadauna0.736–0.850s aproximadamente, incluyeDocker/host/transport, no benchmarklatenciaSQL.
+
+23/23 aprobadas:12cleanup,9auth y2multi-parent.18 esperas explícitas observadas/completadas;5sinwait(renovación/logout de sesión distinta,clockfixtureyrollback). Doscleanups sobre2identidades: primero2deleted,segundo examina2/skips2 despuéscommit, o deletes2 despuésrollback. No dobledelete. Validation/logout ambosórdenes: validantesrevoked, invalid/nullmetadatadespuéscommitrevoked. Doblerenovación ambasactivity_recorded/deadlinescapped; doblelogout primerorevoked/segundoinvalid, sinresurrección. Globalrevocation/auth ambosórdenes: Identity SHARE↔UPDATE espera observada; auth_epoch1 ysnapshot0asertados. Rehash/auth ambosórdenes: revision2/epoch0/valid. Futurefixture temporal sintética clock_anomaly/nullmetadata ysinmutaciónterminal, sinrelojhostmanipulado.
+
+Cleanup escenariosvalidaciónexpired/markexpired: limpiezaesperócommit yeliminóantigua con1/1/0, deteción tardía no extendió30d. Renovación/logoutlive conservados, cleanupold1/1/0; lockscompatibles noesperaen4–6. Global/audience revocationcleanup en ambosórdenes esperaronparentlocks apropiados yconservaronliveepoch-invalidrow. Competingcleanup original1/1/0seguido1/0/1. Rollbackcleanup restauró2sesionesantesde teardown. LosDOinvariantes previstos pasaron; las declaraciones son limitadas a esas aserciones, no prueba exhaustiva de todas las intercalaciones.
+
+Setup/teardown nativos hicieron COMMIT de fixtures UUIDpropios e2/e4, emails.invalid, PHCléxico/digestssintéticos. DELETEscommitted de cleanup/teardown quedaron limitados a esas semillas; no se afirma rollbackglobal de23casos. Casosrollback sírestauraron eliminacionesprovisionales. Entre casos007 confirmócuatrotablasvacías; últimosdatos retirados portearDown nativo. Sincleanupglobal/recursosDockereliminados.
+
+Comprobaciónfinal adicional readonly103_final_concurrency_state.sql, conprefijo bootstrapF habitual(-X-w-ON_ERROR_STOPactor/SID): BEGINREADONLY/guard/PASS/ROLLBACK/exit0. SID7696590721605967915, PG180006, Goose4, identities/identity_credentials/audience_revocations/sessionsvacías, sinworkersF5 ni preparedtransactions.052enabled final PASS/ROLLBACK/exit0 mantiene C/D/Eowners/bodies/ACL yrevocationsdenegadas/callersmínimos. Noresiduosni locksretenidos porworkersF5 (susconexionesya noexisten), deadlocks0/timeouts0.
+
+Archivos nuevos:103finalreadonly y F5B_RESULTS.md/json. F5 manifest/pins e informeF actualizados, docs/verification.md; fuentesGo/specs/C/D/E/migraciones sin cambios. Capturas/snapshots/receipt privados o ignorados. Check-F/F5checker finalPASS.
+
+Limitaciones:23 schedules SQL finitos, no prueba universaldeausenciadeadlocks. RolesSETLOCALROLE sólofixture; autenticaciónindependienteF4 no se reinterpreta. PHCléxico noArgon2id/contraseña/MFA. No saltorealreloj. La matriz23 no incluye un record_activitydedicado trasrevocacióncommitted; síinvalidación/noresurrecciónen caminosprobados, NOatribuir coberturaindependiente aese nuevoescenario. Ese suplemento requiere aprobación si se quiere cerrar explícitamente ese criterio. BackendGo, faultinjection, timeoutscancel/disconnect/commitambiguo yrecuperaciónF5-C no ejecutados. F5-B23/23documentadas aprobadas; F5-C preparada pendiente autorización yrevisiónfresca. B2-A NOcompletamenteverificada. SinGooseUpDown/B1/C_D_E cambios/principal/Celtas/Dockerdelete/deploy/commit/push.
+
+## F5-C — conexión, ACK perdido, recuperación y renovación tras revocación — 2026-10-14
+
+Autorización recibida exclusivamente F para proxy preparado, desconexión de conexiones sintéticas, datos sintéticos/retirada exacta, reconciliación y nueva cobertura postrevocación. Sin PostgreSQL restart/stop, reloj, Goose, B1 ni C/D/E cambios. Source/proxy/bin hashes y Check-F/F5 checker PASS antes de ejecución. Bin Linux SHA7987FA97CC88935348C5DDA919DAEB12150805983CC8463C4EE383B17A1FBA2E coincide F5-A y cierre. Proxy y harness Go no modificados; sólo cliente no interactivo y nuevos fixtures F auxiliares.
+
+Precheck live Docker defaultversion29.8.1 exit0; inspect selectivo contenedor sinEnv, red, volumen, cada invocación separada. Snapshots .local/b2a-f/f5c-*.json; Assert-FDockerSnapshot PASS: IDs/proyecto/digestaprobado, red interna exclusiva, volumen propio, dos binds F readonly, sinpuertos/privileged.000identity PASS/ROLLBACK: DBtp_b2a_f_20261014_r01, SID7696590721605967915, cluster_nameF, PG180006, TCP127.0.0.1:5432.052enabled C/D/E source/owners/grants/memberships PASS,007 versión4 ycuatrotablasvacías. Receipts frescos antes de cada proxy en captures/f5c-live.json(ignorados, no secretos), edad<30s/controlID/IDcompleto/versión4/sinpuertos. Proxy restringe hostname4218b22fbb21, listener127.0.0.1:5433 y único upstream127.0.0.1:5432 dentroF, maintenance/db/application_nameexactos. No DSN externo ni nuevos recursos Docker.
+
+Prefijo bootstrap por cada script en invocación independiente:
+`docker --context default exec tp-b2a-f-20261014-r01-pg sh -c 'PGPASSWORD=$POSTGRES_PASSWORD exec psql -X -w -v ON_ERROR_STOP=1 -h 127.0.0.1 -p 5432 -U tomopedidos_bootstrap -d tp_b2a_f_20261014_r01 -v f_actor=tomopedidos_bootstrap -v f_system_id=7696590721605967915 [opciones]'`.
+Cliente real maintenance viahelper privado Invoke-F5FaultClient.ps1: una llamada dockerexec-i, passwordexistente porstdin/read/export, PGAPPNAME=tp-b2a-f-20261014-r01:ambiguous-cleanup yPGSSLMODEdisable, psql puerto5433 -f /f/control/f5/105_fault_client.sql. Reemplaza únicamente promptinteractivo095, preserva BEGIN/cleanup/COMMIT, añadeassertpending2/2/0 y conserva counts en gset sin imprimir. CLIENT_COMMIT_CONFIRMED sólo tras COMMITrespondido. Sin token/PHC/password/digest resultado en logs, sin reintento.
+
+A. -f /f/control/fixtures/090_fault_seed.sql: identidad f300...1,dosaudiencias ydos sesiones f310...1/2, COMMIT,exit0.000 freshPASS, receipt. Comando proxy:
+`docker --context default exec tp-b2a-f-20261014-r01-pg /f/control/f5/bin/f5harness-linux -mode proxy -receipt /f/control/f5/captures/f5c-live.json -fault before-commit -approval F5_FAULT_ONLY_7696590721605967915`.
+F_PROXY_READY observado en processsession72353; cliente lanzó una conexión y recibió psql lostconnection en105línea12, DockerExit2/toolExit1 (fallo intencional esperado). NoCLIENT_COMMIT_CONFIRMED. Proxyterminóexit0 con COMMIT_NOT_FORWARDED_CLIENT_UNKNOWN y OUTCOME_UNKNOWN_TO_CALLER. Exit0 delproxy NO seinterpretó comoclientsuccess. Primero clasificaciónDESCONOCIDO. Conexiónbootstrap nueva096reconcile:2 sesionesretained, padresintactos,0backendsFtest,PASS/ROLLBACK/exit0. Evidencia combinada (COMMITnoenviado,conexioncerrada,filas2) confirma rollback delDELETE provisional, sin cambiosparciales. No serversuccessprometido.097 exactteardown DELETE2sessions/2audiences/1identity COMMIT,007empties/version4PASS.
+
+B. Nuevo090seed/COMMIT;000freshPASS/receipt. Mismoproxy con -fault drop-ack, session37406. Cliente perdióconexión enCOMMIT(DockerExit2/toolExit1),sinmarkerconfirmación; clasificadoDESCONOCIDO,inclusoaunquemandóCOMMIT. Proxyexit0,event SERVER_COMMIT_COMPLETE_SEEN_ACK_WITHHELD_CALLER_UNKNOWN; recibió CommandComplete(COMMIT) delbackend yloocultóalcliente. Nueva conexión096:sesiones0,padresintactos,0backendsF,PASS/ROLLBACK/exit0. Sólo después de esa evidencia seconfirmaefectocommitted. Ningún retrycleanup ni inferenciasólofromsend.000posteriorSID/versionPASS.097retiradaexacta DELETE0sessions/2audiences/1identity COMMIT;007emptyPASS. DELETEcommitted de2sesionessintéticas irreversible; no datos reales. Mensaje libpq 'server terminated abnormally' es texto genérico porproxyclosedsocket, NO evidencia de reinicio; preflightnuevo/StartedAtfinalconfirmanservidorintacto.
+
+C. Cliente realmaintenance DIRECTO a5432,helper Invoke-F5SqlError.ps1/-f /f/control/f5/106_sql_error_client.sql:BEGIN ycleanup(0),SQLSTATE22023 'Cleanup batch must be between1and100',DockerExit3/toolExit1 previsto. ON_ERROR_STOPcerró conexión,sinCOMMIT/successmarker;007nuevofourtables0/Goose4PASS. -f /f/staged/verification/051_b2a_cleanup_failures.sql: dentrofixtures,22008 clockanomaly revierte todoellote inclusoprimerDELETE;aserción2rowsrestored/NOTICEatomicfailurePASS/ROLLBACK. SegundaTX REPEATABLE READrechazada25000/ROLLBACK/exit0. No cambio de reloj;timestampsfuturossintéticos. ACLnegativos incluidospasaron.007postPASSsinresiduos. Esto acreditafailclosedharness/SQL,no comportamento backendGo/tokens/API.
+
+D1. Nuevo110seed:identityf600...1 active/revision1,credentiallexical,dosaudiencias ysesiónf610...1activa;COMMIT/exit0. Preflightbootstrapfresh. Helperprivado Invoke-F5Revoke.ps1, conexiónTCPREALauth independiente -f111_revoke_confirmed.sql: revoke_sessionresultrevoked,COMMIT/F5C_REVOCATION_COMMIT_CONFIRMED/DockerExit0. Despuésfreshbootstrappreflight yNUEVAconexiónTCPauth Invoke-F5Renew.ps1/-f112_renew_after_revoke.sql: record_activity→invalid,session_id/checked_atNULL,NOTICE,PASS/ROLLBACK/exit0. Freshbootstrap113final:revoked_atnonnullfinita>=created_at,expired_atNULL,lastactivity=created,idlecreated+12h,absolutecreated+7d,epochsident/session/audience0,revision1;PASS/ROLLBACK. Marca terminal ydeadlines intactos,no reactivación.000identitydespuésPASS;114teardownexacto DELETE1session/1credential/2audiences/1identity COMMIT.
+
+D2. Suplemento epoch confirmado, mismo110seed tras007emptinessPASS.115_global_confirmed.sql porbootstrapadministrativo exclusivamentefixture: revoke_global→global_revoked/currentIdentityEpoch1,COMMIT/F5C_GLOBAL_COMMIT_CONFIRMED/exit0. NO grantcallerprivilegiado. Freshbootstrappreflight seguidoNUEVAconexiónREALauth112: record_activity→invalid/nullmetadata,PASS/ROLLBACK/exit0.116final:Identityepoch1,sessionidentitysnapshot0,audienceepoch0,revision1,revoked_at/expired_atNULL,deadlines/activityorigínales;PASS/ROLLBACK. Epochinvalida sincrearmarcatemporal niadelantarretención.114exactteardownCOMMIT. Sin privilegios auth extra ni funciones/grants modificados.
+
+E.117_final_fault_state.sql readonly:SID7696590721605967915/PG180006/Goose4,cuatrotablasvacías,ningún appFtest enpg_stat_activity ni preparedtransactions;PASS/ROLLBACK/exit0.052enabled finalC/D/Emetadata/owner/sourceACL/membershipsPASS/ROLLBACK. ÚltimoDockerinspectselectivoRunning=true,StartedAt2026-10-14T18:22:50.924351475Z(sinreinicio),PortBindings{}. Todosroles/grantsbodiespersistentes intactos. Proxyexit confirmado,sinprocesosclientePGresidentes,listenerdeferclose porfinprograma. No Dockerdelete.
+
+Hashes archivos ejecutados:
+105_fault_client.sql2349E4BF1AAC84B0A598523324F8FAF9FE5B7958F26CC352A62168C65772CB24
+090_fault_seed.sql1A2399D6E60940EB50830C8C1A4AC0E165F9986D7594906E6DE86F7CB669304F
+096_reconcile_fault.sqlC58AB499B8D742D8B093F96F070B2BCF129D022EF8F7668327DE40975D2098C0
+097_fault_teardown.sqlA5F9538568087FB11E9C323319A4569AE1668B2CDC90B73079FAE6CA2F44646F
+051staged91C42B43351F527551115FA650B89DB9760B7733BDE806E13AE0CEC40B8B2871
+Todosnuevos105/106/110–117 yF5C_RESULTS.md pinadosenmanifestF5/F;funcionalesprevios/source/bin sin drift.
+
+F5-Calcance completado:7escenarios principalesPASS(rollbackbeforecommit,lostACKcommiteffect,22023error,22008atomicidad,25000isolation,logoutthenrenew,globaleepochthenrenew). Dosoutcomes inicialmentedesconocidos reconciliados,ningúnoutcomepersistenteindeterminado. Si otrocortepierdeevidencia, elharnessdebería seguirunknown; ese caso noobservado nose afirma probado. F5C_RESULTS.md detallaresultadosylímites. Nuevosfixtures/transportprivados,evidencia/manifiestos; nosecretosimpresos/versionados ni nuevascredenciales. Scriptsoriginales090–097sinmodificar.
+
+Recomendación:cierre delalcanceF5-C probado,NO cierredeB2-Acompletamenteverificada. PlanintegralF aún contiene GooseDown/re-Up yfaultfixtureslocktimeout/statementtimeout/cancel noejecutados/noautorizadosenestafase. Argon2id/rehashproof,CSRF/MFA/keyring,HTTP/pools/retry ysuccess/outcomeunknown/backendGo siguenfuera de esteharnessSQL. Tampocosaltorealreloj. No B1/Goose/C_D_E cambios,mainlocal/Celtas,eliminaciónrecursos,commit/gitpush/deploy.
+
+## F6-A — preparación Down/re-Up, timeouts y cancelación — 2026-10-14
+
+Alcance autorizado: inspección, archivos auxiliares F, documentación, compilación y tests offline. NO se ejecutó Docker, SQL, Goose, cancelación ni nueva provisión. La identidad SID7696590721605967915 y Goose4 son referencia del cierre F5-C; no se presentan como una nueva lectura del cluster en F6-A. Destino preparado único: tp-b2a-f-20261014-r01 / tp-b2a-f-20261014-r01-pg / tp_b2a_f_20261014_r01, PostgreSQL18.6 y digest aprobado.
+
+Archivos nuevos en tomopedidos-api/db/verification/f/control/f6/: README.md (planes F6-B/F6-C, matriz de dependencias/riesgos, recuperación y límites Go); manifest.json; Check-F6.ps1; Print-F6Commands.ps1 (solo imprime comandos, nunca los ejecuta); nueve SQL auxiliares: dependency_inventory, check_transition, holder, observe_cancel, cancel_exact, lock_timeout, statement_timeout, cancel_waiter y reconcile_timeout. Helper Go estándar checks.go/checks_test.go/go.mod y .gitignore excluyen binarios/capturas. Actualizado f-manifest.json para fijar hashes y declarar preparación offline, no ejecución autorizada. Ninguna modificación funcional de B1, migraciones00001–00004 ni C/D/E.
+
+Plan F6-B: exigir tablas vacías, identidad fresca, instalación/ACL esperadas y callers drenados. Deshabilitar y retirar E; deshabilitar D y retirar sus grants; retirar exactamente nueve funciones C. Down4→3→2→1→0 con aserciones por transición; conservar roles B1/D/E, cinco schemas y tabla Goose. Recuperación Up1→2→3→4, C, grants D, habilitación normal D, E y habilitación mantenimiento, con verificaciones intermedias/negativos por conexiones reales. No repetir bootstrap ni provisión de roles; no CASCADE, DROP OWNED ni borrado Docker. Down elimina datos de tablas: estado vacío es prerrequisito, re-Up no restaura datos perdidos.
+
+Dependencias: FK/guards/índices revisados en SQL vigente. ACL no impide normalmente DROP; referencias PL/pgSQL pueden no aparecer completas en pg_depend, por ello retiro administrativo explícito de C/E. Cualquier dependencia o privilegio desconocido detiene el ciclo. El cálculo MAX(version_id) sobre todas las filas históricas is_applied=true no sirve después de Down: check_transition selecciona primero la última fila por versión (ORDER BY id DESC), luego verifica continuidad/version efectiva. No se modificó el verificador histórico ni ninguna migración.
+
+Plan F6-C: fixtures sintéticos090/097 existentes, barrera confirmada de holder FOR UPDATE, conexiones TCP independientes del caller maintenance sin DML directo. lock_timeout250ms→55P03; statement_timeout2s→57014; cancelación explícita→57014 con timeouts SQL desactivados para distinguirla. Cancelación restringida a un único PID+backend_start/base/rol/application_name, holder exacto y único bloqueador, observación reciente≤5s; no pg_terminate_backend ni conexiones ajenas. Capturar SQLSTATE/ERROR inmediatamente, ROLLBACK explícito y probe READ ONLY en el mismo PID; error operacional no se convierte en éxito porque la conexión se recupere. Pérdida de conexión/marker o resultado ambiguo exige reconciliación nueva sin retry. Comprobar liberación de locks, ausencia de prepared transactions/workers y retirar solo fixtures exactos. Cancelación tiene supervisión externa20s; señal enviada no equivale a cancelación confirmada.
+
+Validaciones offline realizadas: Go1.27.2 con GOTOOLCHAIN=local/GOPROXY=off, go test -count=1 (7 tests PASS), go vet y go build -mod=readonly (exit0), herramienta local sin capacidad de conexión/ejecución SQL. Tests cubren historial Down/re-Up, rechazo de huecos/orden inválido, clasificación sin falso éxito y cancelación PID reutilizado/bloqueador externo/observación vencida. Check-F6.ps1 PASS (pins/includes/destino/sintaxis PowerShell/preview); Check-F.ps1 PASS (C9/9 SQL-YAML, D/E, migraciones byte-idénticas y preparación F); git diff --check exit0, solo avisos de normalización LF/CRLF. Estas comprobaciones NO parsean/compilan SQL en PostgreSQL. Hash SHA256 del manifest F6: 5353C75599F8243857AD75F7F9F2BB48E60E51FE828BCCA22225B6349BAB72F1.
+
+Pendientes backend Go explícitos: Argon2id/rehash y límites, generación/almacenamiento de tokens, CSRF/keyring, cookies, HTTP/autorización/MFA, pools y aislamiento de roles/search_path, propagación de deadlines/cancelación, manejo de error/commit ambiguo sin retry o tokens antes de confirmación, registros seguros y respuestas de aplicación. Código actual no implementa ese backend auth; no se añadieron componentes. Garantías SQL y harness no prueban estas propiedades HTTP/Go.
+
+F6-A preparada y revisada offline; F6-B/F6-C requieren autorización de ejecución independiente y preflight real antes de cualquier cambio. Condiciones de parada: identidad/estado inesperado, dependencia extra, pérdida de datos no prevista, error de Goose/SQL/grants, timeout/cancelación no acreditados, resultado ambiguo o residuo no explicado. NO declarar B2-A completamente verificada.
+
+## F6-B — detenido en captura de precheck, sin SQL — 2026-10-14
+
+Autorización recibida para ciclo controlado exclusivamente F. Inspeccionados PROJECT_CONTEXT.md, AGENTS de API, README F6-A, Print-F6Commands, check_transition, target y mecanismos privados de conexiones reales (sin imprimir secretos). Check-F6.ps1 PASS; Check-F.ps1 PASS: nueve contratos C SQL/YAML, D/E y hashes funcionales/migraciones intactos. No se ejecutó SQL ni Goose; no se retiraron ni restauraron objetos.
+
+Docker invocaciones separadas:
+1. docker --context default version --format '{{.Server.Version}}': salida29.8.1, exit0.
+2. docker --context default inspect tp-b2a-f-20261014-r01-pg --format con proyección selectiva de Id,Name,Config.Image/Labels,State,HostConfig.NetworkMode/Privileged/PublishAllPorts/PortBindings,NetworkSettings.Networks,Mounts; sin Config.Env. Exit0, pero las claves literales JSON perdieron comillas en transporte PowerShell→Docker: salida empieza {Id:"4218b22f...",Name:...}, no JSON válido. Por tanto no se ejecutó Assert-FDockerSnapshot ni se acreditó el preflight completo.
+
+Valores visibles: ID4218b22fbb213e9ae748e164f4cb429a74ba2d8307e386a1e0d09c750437d351; nombre/proyecto F esperado; Config.Image postgres:18.6-bookworm@sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c; Runningtrue, StartedAt2026-10-14T18:22:50.924351475Z; PortBindings{}; una red F y volumen F, dos binds F readonly. Esto no sustituye validación completa ni prueba el digest real de imagen, identidad SQL, tablas vacías, Goose efectivo, ACL o ausencia de conexiones. No se consultaron redes/volumen por separado tras el bloqueo.
+
+Punto exacto de parada: antes del primer SQL y antes de cualquier retiro E/D/C o transición Goose. No hay estado parcial generado por F6-B. Versión4/roles/grants/tablas vacías son antecedentes F5-C, NO comprobación SQL fresca de esta fase. Transiciones Down/Up ejecutadas:0. Verificadores dinámicos ejecutados:0. F6-C no ejecutada.
+
+Recuperación propuesta para autorización separada: corregir únicamente el transporte de argumentos de captura selectiva (sin leer Config.Env ni relajar Assert-FDockerSnapshot), registrar snapshots JSON válidos de contenedor/red/volumen F y verificar digest/aislamiento; repetir preflight SQL de solo lectura y recién continuar desde paso0 del plan aprobado. No repetir B1, no reparaciones funcionales, no CASCADE ni eliminación de recursos. B2-A NO completamente verificada.
+
+## F6-B — recuperación de captura, nuevo bloqueo offline — 2026-10-14
+
+Autorizado corregir transporte JSON y continuar solo tras preflight completo. Se sustituyó la proyección con claves JSON literales por doce valores JSON independientes generados por Go template: {{json .Id}}{{println}}{{json .Name}}{{println}}{{json .Config.Image}}{{println}}{{json .Config.Labels}}{{println}}{{json .State}}{{println}}{{json .HostConfig.NetworkMode}}{{println}}{{json .HostConfig.Privileged}}{{println}}{{json .HostConfig.PublishAllPorts}}{{println}}{{json .HostConfig.PortBindings}}{{println}}{{json .NetworkSettings.Networks}}{{println}}{{json .Mounts}}{{println}}{{json .Image}}. No comillas literales en argumento, sin Config.Env; valores reales no hardcodeados.
+
+Cuatro invocaciones Docker separadas, todas exit0: docker --context default inspect tp-b2a-f-20261014-r01-pg --format [plantilla anterior], network inspect tp-b2a-f-20261014-r01-net --format '{{json .}}', volume inspect tp-b2a-f-20261014-r01-data --format '{{json .}}', image inspect postgres:18.6-bookworm@sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c --format '{{json .Id}}{{println}}{{json .RepoDigests}}'. Capturas ignoradas .local/b2a-f/f6b-{container-fields.jsonl,network.json,volume-raw.json,image.jsonl}. Doce líneas del contenedor parsearon individualmente sin error JSON.
+
+Nuevo auxiliar Convert-DockerCapture.ps1 construido para serializar offline sin invocar Docker. Su primera prueba falló exit1: Serialization roundtrip mismatch, línea18. PARADA inmediata: Assert-FDockerSnapshot, comparación de digest y verificadores siguientes no llegaron a ejecutarse. No SQL/Goose/retirada/restauración; Down0/Up0. No estado parcial PostgreSQL generado.
+
+Diagnóstico de archivos exclusivamente offline tras parada: salida tiene ocho campos raíz, mientras la aserción nueva exigía nueve; además pipeline PowerShell enumeró elementos del array Mounts en el array global $x, por lo que $x[10] contiene un solo mount y $x[11] deja de ser necesariamente Image. RootFields8, MountsTypePSCustomObject/MountsCount1, InputLines12. La salida serializada NO es apta para preflight aunque su sintaxis JSON sea válida. No se reparó ni reintentó después del nuevo error. Hash del auxiliar fallido SHA2564A8FA0F475E9951A57D740C29FA5250B787CED9C950965E3919DBB1ECF799CB7; conservado para revisión, no incorporado como artefacto aprobado a manifiestos.
+
+Estado: transporte Docker sin comillas literales produce JSON parseable, pero serializer nuevo no preserva aún arrays/campos. Preflight fresco incompleto; identidad SQL/Goose/tablas/roles/grants/CDE no revalidados. No secretos impresos, sin acceso localprincipal/Celtas ni F6-C. Propuesta de recuperación separada: preservar cada valor JSON como un único elemento (sin enumerar arrays), exigir exactamente ocho campos raíz reales y comprobar equivalencia profunda de todos los doce valores con tests offline positivos/negativos antes de nuevas validaciones live. No debilitar Assert-FDockerSnapshot. Necesaria nueva autorización por condición de parada; B2-A no completamente verificada.
+
+## F6-B — serializador corregido; parada por lectura de ruta auxiliar — 2026-10-14
+
+Autorización expresa para dos correcciones offline y continuación condicionada. Cambios Convert-DockerCapture.ps1: aserción de ocho campos raíz (antes nueve); almacenamiento fijo object[12] con decodificación envuelta en propiedad JSON value, evitando enumeración PowerShell de arrays. Equivalencia de cada uno de los doce valores reconstruidos mediante serialización JSON estructural; Mounts conserva []/[one]/[many] y arrays anidados, sin convertir arrays a strings en el resultado. Nuevo Test-DockerCapture.ps1: tres casos Mounts0/1/2, con arrays anidados [],[1],[2,3], tipos bool/null/números y labels/aliases. 3/3 PASS, exit0. Check-F6 y Check-F PASS, exit0; migraciones/B1/CDE funcionales sin cambios.
+
+Capturas LIVE nuevas, cuatro invocaciones Docker independientes, todas exit0: inspect contenedor F con doce valores JSON sin comillas literales ni Config.Env; network inspect red F; volume inspect volumen F; image inspect postgres18.6 con digest aprobado. Snapshots ignorados .local/b2a-f/f6b-*. Serializer ejecutado sobre nuevas capturas PASS; Assert-FDockerSnapshot PASS (proyecto/contenedor, una red interna F, mounts F exclusivos readonly, volumen F exclusivo, sin puertos publicados); comparación de Image ID real del contenedor con image inspect y RepoDigest aprobado PASS. No valores hardcodeados sustituyen datos capturados.
+
+Nuevo bloqueo inmediatamente posterior: comando de lectura Get-Content tomopedidos-api/db/verification/f/control/fixtures/052* -TotalCount10 falló porque esa carpeta no contiene el objeto solicitado. Error PowerShell ItemNotFound, tool exit1. Esta búsqueda fue un error del agente al elegir la ruta, independiente del serializador. Parada sin correcciones ni reintentos. No se ejecutó SQL, Goose, retiro/restauración ni F6-C. Identidad SQL/SID, versión Goose efectiva, cuatro tablas vacías, conexiones residuales y ACL CDE todavía NO revalidados en esta recuperación. No estado parcial PG generado.
+
+Resultado actual: serializador recuperado y probado; preflight Docker fresco PASS; preflight SQL incompleto. Down0/Up0; CDE retirados0/restaurados0. Estado SQL sigue siendo antecedente F5-C, no comprobación nueva. Para continuar hace falta autorizar resolver únicamente la ruta del verificador052 mediante rg --files -g, sin alterar tests, refrescar preflight y retomar paso0. No modificaciones B1/migraciones/funciones/grants; no recursos eliminados/reiniciados, principal/Celtas, commit/push/deploy. B2-A no completamente verificada.
+
+
+## F6-B — ejecución del ciclo y parada en verificación final — 2026-10-14
+
+# F6-B — cycle restored; final checks pending (2026-10-14)
+
+Original wrong route: control/fixtures/052*. Correct F route: /f/staged/verification/052_b2a_cleanup_metadata.sql. Original and staged files found with rg --files -g; source/copy mapping confirmed in stage-manifest, SQL unchanged.
+
+Offline serializer Mounts0/1/2 and F/F6 checks PASS. Fresh Docker snapshot validation and real image digest PASS. Fresh SQL000 confirmed SID7696590721605967915, database tp_b2a_f_20261014_r01, PG180006. Initial052enabled, check_transition4/enabled/enabled and117final PASS/ROLLBACK: Goose4, empty tables, CDE source/owner/ACL correct, no F workers/prepared transactions. Dependencies inventoried, owners tp_owner.
+
+Retirement: E disable→E Down→D disable→D ungrant→exact C9-function Down, each COMMIT/exit0 with state assertions and refreshed Docker/SID preflight. Roles retained, no CASCADE.
+
+| Direction | Transition | SQL file | Goose time | State assertion |
+|---|---|---|---|---|
+|Down|4→3|00004_session_cleanup_index.sql|13.04ms|PASS|
+|Down|3→2|00003_identity_guards_indexes.sql|8.08ms|PASS|
+|Down|2→1|00002_audience_sessions.sql|13.49ms|PASS|
+|Down|1→0|00001_identity_credentials.sql|12.01ms|PASS|
+|Up|0→1|00001_identity_credentials.sql|27.95ms|PASS|
+|Up|1→2|00002_audience_sessions.sql|19.05ms|PASS|
+|Up|2→3|00003_identity_guards_indexes.sql|12.38ms|PASS|
+|Up|3→4|00004_session_cleanup_index.sql|6.67ms|PASS|
+
+At0:002_post_down and010 B1 metadata PASS/ROLLBACK; five schemas/roles/Goose retained, identity objects removed. Real migrator/SET tp_owner startup, qualified migration_meta.goose_db_version, pinned F DSN, existing independent credential. Eight F-only tool containers created and retained: f6-goose-down3/2/1/0, f6-goose-up1/2/3/4. Expected Compose orphan warnings, no removal. At4:004 metadata PASS,030 integrity/guards corpus PASS/ROLLBACK.
+
+Restoration: C nine functions installed; D executor grants then normal auth enable; E cleanup install dormant then enable. Every script COMMIT/exit0, every post-state assertion PASS. No B1 repeat, role provisioning or credential changes. Independent real auth04126 negatives and tenant04133 negatives PASS/ROLLBACK/DockerExit0 (59 total). No SET ROLE surrogate.
+
+Last executed SQL check_transition4/Cenabled/Eenabled PASS/ROLLBACK after E enable: four empty tables, nine indexes, three guards, C9/E1 source/owners/ACL, eight retained minimal roles and five schemas, no auth/maintenance callers/prepared transactions. Auth7 normal EXECUTE/no DML; privileged revokes denied auth/tenant/PUBLIC; cleanup maintenance-only.
+
+NEW STOP: subsequent offline read tried staged/verification/050_b2a_cleanup_retention.sql, which does not exist. Discovery already listed050_b2a_retention_concurrency.sql. Agent route error, PathNotFound/tool exit1; stopped without retry/correction or subsequent SQL. Thus cycle and restoration completed, but F6-B NOT closed.
+
+Pending: real maintenance login/negatives/normal call,060/061/050/051 functional retention/failure fixtures and final052/identity/Goose/empty-table checks. No F6-C. Do not repeat Down/Up or reinstall. Separate continuation authorization needed for050 path correction and pending checks after refreshed preflight.
+
+Evidence individual commands/output/exit: F6B_TRANSCRIPT.md and docs/verification.md. While writing evidence, apply_patch rejected replacement using delete/add same target; no database action, report then written directly. Functional files untouched; no CASCADE, Docker restart/delete, principal/Celtas access, commit/push/deploy. B2-A not completely verified.
+
+
+
+## F6-B — cierre post Down/re-Up — 2026-10-14
+
+## Closing verification — PASS — 2026-10-14
+
+This section supersedes the prior pending/stop status; previous cycle evidence remains historical. F6-B completed within its approved PostgreSQL scope.
+
+Route corrected only in invocation: nonexistent050_b2a_cleanup_retention.sql → /f/staged/verification/050_b2a_retention_concurrency.sql. rg --files and stage-manifest source/staged mapping confirmed the correct contract; no SQL/asertion changed. Eleven pending verifier/control paths verified present, unique in F manifest and hash-exact:070,071,073,074,060,061,050,051,052,117,check_transition. Serializer roundtrips0/1/2 mounts, Check-F6 and Check-F PASS.
+
+Fresh physical/SQL preflight PASS: exact Compose/container F, actual image ID equals approved RepoDigest sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c, exclusive internal network/volume and permitted readonly mounts, no published ports.000 confirms database tp_b2a_f_20261014_r01, SID7696590721605967915, PG180006; check_transition latestGoose4/Cenabled/Eenabled and117 confirm initially empty four tables/no F workers/prepared transactions and exact CDE sources/roles/owners/ACL.
+
+| Pending check executed | Result |
+|---|---|
+|070 independent TCP maintenance login|PASS, session/current user maintenance, ROLLBACK|
+|071 real maintenance negatives|12/12 PASS, ROLLBACK|
+|073 real maintenance authorized cleanup|empty batch examined0/deleted0/skipped0, ROLLBACK|
+|074 real auth cleanup denial|insufficient_privilege expected, PASS/ROLLBACK|
+|074 real tenant cleanup denial|insufficient_privilege expected, PASS/ROLLBACK|
+|060 SQL primitive paths|nine functions exercised on synthetic fixtures, PASS/ROLLBACK|
+|061 fail-closed states/audience/digest/overflows/stale CAS|PASS/ROLLBACK|
+|050 eight retention cases/bounds|PASS, detailed below, ROLLBACK|
+|051 atomicity/clock anomaly/isolation|PASS, both transactions ROLLBACK|
+|052 enabled metadata|cleanup signature/body/owner/ACL, D and E assertions PASS/ROLLBACK|
+|Final check_transition4/enabled/enabled +117|PASS/ROLLBACK, empty/clean|
+
+TCP tests used existing independent F credentials through private helpers/stdin, no secret printing and no SET ROLE substitute. Functional050/051/060/061 use bootstrap to create synthetic fixtures and SET LOCAL ROLE for behavior inside rollback transactions, distinct from the real login/negative evidence. PUBLIC cleanup denial checked via exact ACL/effective metadata assertions; PUBLIC is not a login actor. Only normal auth7 EXECUTE allowed; privileged revokes remain denied auth/tenant/PUBLIC; callers have no direct DML; maintenance only intended cleanup, no executor membership/DDL/other functions.
+
+### Eight retention fixtures (transient effects before rollback)
+
+| Case | Synthetic situation | Outcome |
+|---|---|---|
+|1|natural expiry older than30d|deleted|
+|2|recent natural expiry|retained|
+|3|active/unexpired|retained|
+|4|epoch-only invalid, natural deadlines future|retained|
+|5|epoch-only invalid, natural terminality older than30d|deleted|
+|6|old natural expiry detected late, expired_at recent|deleted; late detection does not extend retention|
+|7|revocation older than30d, before natural terminality|deleted|
+|8|creation older than30d, natural terminality still within30d|retained; creation not anchor|
+
+cleanup(100) examined4/deleted4/skipped0, expected survivors2/3/4/8; parent auth_epoch remains1, two audience rows remain. ROLLBACK TO savepoint restored8 sessions. Separate savepoint cleanup(1) examined1/deleted1; NULL/0/-1/101 rejected22023, repeated cleanup in same transaction rejected25000. Exact30d arithmetic/NULL semantics and1-microsecond-over-boundary checks PASS. Outer ROLLBACK removes all fixture rows. No claim of rerunning the prior full100-row fixture or concurrency/F6-C.
+
+051: auth/tenant unauthorized calls rejected; second synthetic session's future terminal timestamp causes22008 after provisional deletion of first, atomic assertion finds both sessions restored; parents retained until outer ROLLBACK. Separate REPEATABLE READ transaction rejects25000 before deletion, ROLLBACK. No system-clock manipulation.061 confirms fail-closed conditions and overflow/stale-CAS behavior; SQL harness does not prove HTTP/Go cryptography or application response handling.
+
+### Final state and limits
+
+Fresh final052,check_transition and117 all exit0/ROLLBACK: SID7696590721605967915, PG18.6, effective Goose4, four tables empty, nine indexes/three guards, C9 plus E cleanup installed, expected eight retained roles/five schema owners and exact source/ACL. No residual F test connections/prepared transactions. Fixture DELETE/UPDATE/INSERT only transactional; none committed in this closing turn. Credentials/identities/epochs outside fixture never changed.
+
+Earlier cycle4Down+4Up remains verified and B1 metadata passed at0; not repeated now. No new SQL/permission/identity failures or unresolved blockers. No CDE reinstall/grant changes, B1/migration/function modifications, Docker restart/delete, principal/Celtas access, commit/push/deploy. Updated only F6B_RESULTS.md/F6B_TRANSCRIPT.md/docs/verification.md for closing evidence.
+
+F6-B COMPLETE for approved cycle+postcycle verification. F6-C timeouts/cancellation and backend Go contracts remain pending; B2-A NOT completely verified.
+
+Comprobación documental posterior: git diff --check devolvió exit1 por una línea vacía al final de docs/verification.md (línea3218), además de avisos LF/CRLF. No fue un fallo SQL ni altera los resultados de F6-B; no se repitieron pruebas ni se hicieron correcciones funcionales. Se conserva este resultado como observación editorial.
+
+## F6-C — parada por transporte stdin del holder — 2026-10-14
+# F6-C — STOP before timeout/cancel scenarios (2026-10-14)
+
+## Preflight / offline checks
+
+PASS exact approved F destination: Compose tp-b2a-f-20261014-r01; container tp-b2a-f-20261014-r01-pg; DB tp_b2a_f_20261014_r01; SID7696590721605967915; PostgreSQL180006. Fresh selective Docker C/N/V snapshots and unchanged Assert-FDockerSnapshot PASS: exclusive internal network/volume, permitted mounts, no published ports. Running image ID matched image inspect and approved RepoDigest sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c.
+
+Check-F6 and Check-F PASS; all seven F6-C SQL pins/routes and seed090/teardown097/final117/metadata052 dependencies exact and unambiguous. Existing approved SQL unchanged. Private ignored Invoke-F6Maintenance.ps1 prepared from existing real-maintenance helper, limited to lock_timeout/statement_timeout/cancel_waiter, no provisioning, parser PASS and git check-ignore PASS. No real maintenance scenario executed.
+
+Fresh000 identify, check_transition4/enabled/enabled,052enabled,117final all exit0/ROLLBACK: Goose4, four tables empty, C/D/E source/owners/roles/ACL expected, no F test connections/prepared transactions.
+
+## Actual execution and error
+
+090_fault_seed.sql exit0/COMMIT: one synthetic identity f3000000-0000-4000-8000-000000000001, two audience rows, two sessions f3100000-0000-4000-8000-000000000001/2. No credentials created. These are expected retained fixtures, not unexplained data.
+
+Started original holder.sql through Docker exec -i with psql -f and tool stdin. It acquired FOR UPDATE, printed F6_HOLDER_LOCK_ACQUIRED and PID2527/backend_start2026-10-14 23:06:49.522673+00. At line9, prepared interactive prompt failed:
+psql:/f/control/f6/holder.sql:9: error: backslash-prompt: could not read value for variable
+Docker/tool exit1. Native invocation did not retain readable interactive stdin. Terminal barrier alone was insufficient: holder exited before any maintenance connection started. No script correction/retry after unexpected error.
+
+lock_timeout scenarios executed0; statement_timeout0; explicit cancellation0. Expected55P03/57014 NOT tested, no target signaled. No ambiguous COMMIT claim. Holder's explicit ROLLBACK line was not reached; its uncommitted transaction closed with the failed psql connection. Do not report explicit rollback/recovery tests passed.
+
+## Diagnostic read after stop
+
+Only the preapproved read-only reconcile_timeout.sql was executed after the error to record current fixture/connection state; exit0/BEGIN READ ONLY/ROLLBACK. Asserted two synthetic sessions, one synthetic identity and two audiences intact. No rows in pg_stat_activity for F6-prefixed applications: holder no longer exists, hence no lock remains owned by that closed holder. No timeout/cancel waiter existed, no unrelated backend canceled. No fixture DELETE/cleanup or teardown run after stop.
+
+Last full metadata verification before seed confirmed Goose4 and expected roles/CDE ACL. No schema/grant/migration modifications were executed afterward; final metadata/empty-state assertion was NOT run because five synthetic rows remain (1identity+2audiences+2sessions), credentials0. All four tables are therefore NOT empty at stop.
+
+## Recovery and closure recommendation
+
+Stop maintained. A separately authorized transport-only recovery is needed to keep holder stdin open until deliberate release, offline-test that transport, then refresh identity/metadata and reconcile the existing exact fixtures before deciding whether to reuse or remove097. Do not rerun090 against nonempty tables. No need for Goose/B1/CDE reinstalls or grants. Holder transport must preserve original assertions and explicit release-after-failure barrier; never introduce blind sleeps or arbitrary backend cancellation.
+
+F6-C incomplete. Do not close the full PostgreSQL verification scope while three timeout/cancel cases are unexecuted. F1–F6-B prior results remain historical PASS. Backend Go integration/Argon2id/tokens/CSRF/cookies/HTTP/pools/ambiguous-outcome handling also remains pending. No claim B2-A completely verified.
+
+Changes this turn: this report, F6C_TRANSCRIPT.md, docs/verification.md; private ignored maintenance transport helper. No changes to B1, migrations, C/D/E SQL or grants; no Docker restart/stop/delete, principal/Celtas access, commit/push/deploy.
+
+## F6-C — recuperación y cierre verificado — 2026-10-14
+
+## Controlled recovery and completion — PASS — 2026-10-14
+
+This section supersedes the prior STOP status. F6-C COMPLETE: all three original scenarios passed and exact synthetic fixtures were removed. No functional PostgreSQL contracts changed.
+
+### Holder transport correction / offline checks
+
+Original holder.sql uses psql backslash-prompt for release. Prior exec-i invocation inherited an unreadable/closed input stream, so prompt read EOF after acquiring its lock. Start-F6Holder.ps1 now owns a redirected child stdin pipe and keeps it open. It reads the exact F6_HOLDER_LOCK_ACQUIRED marker before emitting CONTROL_READY, then blocks on a named-pipe control barrier. Release-F6Holder.ps1 sends RELEASE_AFTER_CONFIRMED_FAILURE only after observed expected error/ROLLBACK/same-PID recovery. Transport writes one release line, observes original holder.sql ROLLBACK and child exit0. No manual input, sleeps, blind delays, server modifications or extra grants. Exactly one Docker invocation per live holder exec_command; bootstrap credential stays in container environment, never printed.
+
+Test-HolderTransport.ps1 used a fake child (no Docker/SQL) with real stdin/named-pipe synchronization: acquired barrier, input stays open, explicit release, rollback marker, process exit0 PASS. Check-F6 and Check-F PASS before/after execution, original scripts/source pins unchanged. Seven original F6 SQLs and dependency paths/hashes reviewed; new read-only reconcile_existing.sql records exact reuse preconditions.
+
+### Fresh preflight and fixture reconciliation
+
+Fresh actual C/N/V/image snapshots and Assert-FDockerSnapshot PASS: exact project/container F, approved image digest, internal exclusive network, permitted mounts/exclusive volume, no host ports.000identify confirms SID7696590721605967915, database tp_b2a_f_20261014_r01, PostgreSQL180006;052enabled confirms C/D/E source/signatures/owners/ACL/role attributes/memberships; latest Goose4 asserted.
+
+reconcile_existing.sql READ ONLY PASS/ROLLBACK before reuse and after each case. Global row counts exactly identities1/credentials0/audiences2/sessions2; identity UUID f300...0001/email fault-f@example.invalid/status pending/epochs0/revision0, audiences admin/platform epochs0, session UUIDs f310...0001/2/digests match original synthetic seed/CSRF fields/terminal marks NULL/deadline relationships intact and both naturally expired>30d. No extra rows, no F test connections or prepared transactions. Therefore existing fixtures reused for all three cases without duplicating090 or recreating data. Metadata preflight and final source checks imply no B1/CDE changes.
+
+### Observed individual scenarios
+
+| Case | Holder PID/start UTC | Real maintenance waiter/recovered PID | Expected/observed SQLSTATE | Result |
+|---|---|---|---|---|
+|lock_timeout250ms, statement5s|2572 / 23:10:11.465787|2580 / 2580|55P03 /55P03|PASS|
+|statement_timeout2s, lock0|2602 /23:10:44.991314|2610 /2610|57014 /57014|PASS|
+|explicit cancel, statement0/lock0|2632 /23:11:23.880105|2640 /2640|57014 /57014|PASS|
+
+All dates2026-10-14. Waiter backend_start:2580=23:10:24.954065+00;2610=23:10:59.191829+00;2640=23:11:36.893002+00. Independent real maintenance TCP logins use existing private F password/stdin, no SET ROLE substitute. All original scripts captured SQLSTATE/ERROR immediately, then explicit ROLLBACK and new READ ONLY transaction on the SAME backend PID, marker F6_CONNECTION_RECOVERED_OPERATION_ERROR, probe COMMIT, DockerExit0. Probe COMMIT confirms connection recovery, NOT successful cleanup. No unknown/ambiguous result or automatic retry. No ordinary DML continued in the aborted transaction before ROLLBACK; no additional deliberate25P02 query was added to approved assertions.
+
+Before releasing each holder, reconcile_timeout READ ONLY verified both sessions and parents retained; only intended holder remained idle-in-transaction, with no blocking PIDs of its own. After failure/rollback/recovery evidence, explicit named-pipe release yielded original holder ROLLBACK and F6_HOLDER_RELEASED_ROLLBACK_CONFIRMED/exit0. Subsequent exact reconcile verified no F test backends/prepared transactions. No persistent modification by cleanup, no waiter locks remain, and holder locks ended with its explicit rollback.
+
+Cancellation: observe_cancel returned EXACTLY one pair, waiter2640/holder2632, sole blocker{2632}, observed_at2026-10-14 23:11:52.707612+00. cancel_exact.sql revalidated PID+backend_start/database/actor/application/state/sole blocker and observation≤5s before one pg_cancel_backend call. Marker SENT was not treated as observed cancellation. Only subsequent waiter57014/ROLLBACK/same-PID recovery proved success. Holder2632 remained alive/idle and independent observers succeeded after cancellation; no other signal call or backend termination occurred. Observation-to-cancel subsecond, within20s supervision window from waiter start. Statement timeout used a deterministic row-lock wait to exceed2s, no CPU load/system-clock manipulation.
+
+### Exact cleanup and final state
+
+After final holder release, reconcile_existing asserted exact fixture set and no workers/prepared transactions. Existing097_fault_teardown.sql then deleted sessions2/audiences2/identity1, COMMIT/exit0, all restricted to the recorded synthetic identity UUID. These explicit committed DELETEs retire only synthetic fixtures and are irreversible; timeout/cancel operations themselves were rolled back. No credential rows existed or were deleted.
+
+Fresh final Docker/image checks PASS, then052enabled,check_transition4/Cenabled/Eenabled,117final all exit0/ROLLBACK. Final SID7696590721605967915/PG18.6/Goose4; four empty tables, C9+Ecleanup installed, nine indexes/three guards, expected eight minimal roles/five schema owners/source hashes/ACL, auth7 normal functions/no DML, privileged revokes denied auth/tenant/PUBLIC, maintenance cleanup-only. No F test connections/prepared transactions, hence no locks owned by closed holder/waiter backends. No residual fixtures or unknown outcomes.
+
+### Sources and limits
+
+SHA256:
+- holder.sql62A86B68E375722614E2F5A90973C99244D9D0EE20EC9C80650E946C9F63CF42
+- lock_timeout.sql3DD4B07EC787F271EEB091B5B1B699FAAF65133AD0362B0A65A3398E0E80FCCE
+- statement_timeout.sql1FC225C6C650AD65D1C776710EA5C62BE9E41240E7EDD5CB0681A1B4FAAEB7E1
+- cancel_waiter.sql54C7A8A88DBBC40EB7A3B9180D5D81B3ACD31E6C6ECAB7CB29AD90BA0AE42FAF
+- Start-F6Holder.ps115EC27FDAB7ED0818A7499ABC34C385BECAF96286781D97A55DF899A8EE40FD1
+- Release-F6Holder.ps11A5217ECCAD371E78B6B01B6CAED07DAE991B2BC8FACA80F993BDC28E136E4FE
+- Test-HolderTransport.ps170E5AC2AE64CEBF5E6E1F10333987BB76CF3FF365DB26D25E55215420062218F
+- reconcile_existing.sql5C158C67693EE8C4FBAA93531C55EB8B41A4B6BB3E7DD2BC3445FF4A34DFF6E2
+
+Created transport helpers/offline test/read-only reconciliation; updated this report, F6C_TRANSCRIPT.md, docs/verification.md. Original holder/scenario SQL and C/D/E/B1/migrations/grants unchanged. No Goose, reinstall, credential change, restart/stop/delete Docker, principal/Celtas access, commit/push/deploy. No unexpected error in this recovery.
+
+Recommend closing the approved, executed PostgreSQL verification scope F1–F6-C, with evidence limited to tested schedules/failures (not exhaustive fault proof). Backend Go integration, Argon2id/rehash crypto, tokens, CSRF/keyring/cookies/HTTP/MFA, pools/context/deadlines and application ambiguous-outcome handling remain pending. No automatic claim B2-A completely verified.
+
+## Plan incremental de autenticación Go posterior a F6-C — 2026-10-14
+
+Alcance: solo lectura/análisis/documentación. Inspeccionados main, config, router, Executor, tests Go, go.mod/sqlc.yaml, directorios schema/queries (solo.gitkeep), firmas/cuerpos/manifiestos C/D/E, D01–D10, ADR-003 y ejemplos HTTP. No Docker, conexiones SQL a F/local, migraciones, código, instalación, benchmark ni ejecución de tests.
+
+Estado de código: GET/healthz y configuración HTTP; pgx declarado sin pool/conexiones/repositorio. Executor solo Exec. TestHealth y TestLoad(seis subcasos) inspeccionados, no ejecutados. SQL de autenticación mantiene siete funciones normales para auth, dos revocaciones privilegiadas sin caller; issue_session solo emite admin/password. Fuente de ejecución SQL: evidencia F1–F6-C, no nueva comprobación live. Contexto/especificación/manifiestos históricos con estados previos no se reinterpretaron como estado real ni autorización para destino local.
+
+Nuevo docs/architecture/b2a-go-incremental-plan.md: estado existente/aprobado/propuesto, mapa de nueve funciones C y cleanup E con firmas/inputs/retornos, NULL/enums y límites de datos, flujos login/rehash/validación/actividad/logout, epochs, arquitectura/pools y una operación por tx READ COMMITTED; budgets/cancelación/rollback/unknown sin éxito ni retry. Propone endpoints admin, mantiene platform/globalrevocation bloqueados y distingue DTO email no soportado por SQL. Argon2 perfiles y CSRF keyring/prelogin/HTTP quedan gates explícitos, no decisiones inventadas. Matriz de tests y entregas G1–G7 con criterios verificables. G1 recomendado: núcleo puro correo/token/UUID/tipos/tests stdlib, sin DB/endpoints/Argon2 productivo ni cambios de módulos.
+
+Limitaciones: una búsqueda opcional de fuentes de dependencias en .cache/go/mod no encontró esos directorios; no se instalaron ni actualizaron módulos para resolverlo. No se atribuyen garantías nuevas a pgx ni a Argon2; la semántica de cancelación/pool/commit se probará en su entrega autorizada. Revisión documental estática; Go/auth aún sin implementar. No cambios B1/migraciones/funciones/grants, principal/Celtas, deploy/commit/push. B2-A no completamente implementada ni verificada; aprobación de código G1 y decisiones HTTP/criptografía quedan pendientes.

@@ -1,14 +1,14 @@
 {
     "schema_version":  1,
     "delivery":  "D2.1-B2-A-F",
-    "status":  "prepared_static_only_not_executed",
+    "status":  "F5C_tested_scope_PASS_F6A_prepared_offline_only",
     "target":  "target.json",
     "execution_authorized":  false,
-    "credentials_provisioned":  false,
-    "system_identifier_enrollment":  "pending_manual_review",
+    "credentials_provisioned":  true,
+    "system_identifier_enrollment":  "F1_verified_7696590721605967915_F2_pinned",
     "original_A_E_modified":  false,
     "original_B1_modified":  false,
-    "Docker_SQL_Goose_PostgreSQL_executed":  false,
+    "Docker_SQL_Goose_PostgreSQL_executed":  true,
     "stage":  "stage-manifest.json",
     "migration_bytes":  "00001-00004_original_exact",
     "function_bodies":  "original_exact",
@@ -45,7 +45,7 @@
                   },
                   {
                       "file":  "Check-F.ps1",
-                      "sha256":  "D6EAC9E0D97F3C16C319E42B617AB029CD96DB0FB7B4E4B64316D68A2091F1D7"
+                      "sha256":  "92B173DA1E786D3698FF49D240B3852B33C1058A3B1A3380B2C4BD03780B2EC0"
                   },
                   {
                       "file":  "compose.f.yaml",
@@ -73,7 +73,7 @@
                   },
                   {
                       "file":  "control/fixtures/030_integrity.sql",
-                      "sha256":  "57C59D7C72E68CFDA106D6B62B78941584F82618F5BFCC329E623FEA7DA916DF"
+                      "sha256":  "034D31887B0238E6ADA16E669154B10F10B6ADCDA8D798179187F2AAEBB754AC"
                   },
                   {
                       "file":  "control/fixtures/060_auth_primitives.sql",
@@ -229,7 +229,7 @@
                   },
                   {
                       "file":  "staged/verification/041_b2a_caller_negatives.sql",
-                      "sha256":  "4AED1AEABFC06F556D25EAB69862128CF7258CEA0F0D015960950AD281A120E6"
+                      "sha256":  "789198EA36F59FFFBD29DEDFA520658BB452C87829119D0B040665B643CB6CFA"
                   },
                   {
                       "file":  "staged/verification/050_b2a_retention_concurrency.sql",
@@ -253,7 +253,7 @@
                   },
                   {
                       "file":  "stage-manifest.json",
-                      "sha256":  "4A49956A8AC28C5E811A13E6E998056C766A33C926629B5B63E64FFAA7A955CD"
+                      "sha256":  "7D2DD8D3CE2AF9802963B000B67E77F8F355DE6EEFCC3F63118A8A69238516B1"
                   },
                   {
                       "file":  "synthetic-snapshots/container.json",
@@ -269,7 +269,7 @@
                   },
                   {
                       "file":  "target.json",
-                      "sha256":  "FBAEDBC5C6904E6A868976780B33795051DAC7CEF928A42EF3EB6BD44CDFFA15"
+                      "sha256":  "CD4D1D1611FFFE1FFCF7229A6C34AB6C53D5E484FEFA71BB687C7F45027B1D7B"
                   },
                   {
                       "file":  "Test-FSnapshotGuard.ps1",
@@ -294,6 +294,312 @@
                   {
                       "file":  "compose.tools.yaml",
                       "sha256":  "3C2C9306A6A0EE4AFCE37E36D81F024CFA3E15877F6FA86A2A1E42BB6D7F5CF3"
+                  },
+                  {
+                      "file":  "control/005_f2_inventory.sql",
+                      "sha256":  "29E4C56B3E37F0480D5075ED8553B196B80B267274AF00CD79E22C8E4E35F1B0"
+                  },
+                  {
+                      "file":  "control/006_f3_state.sql",
+                      "sha256":  "26BCB93902D6C35D6C649466E246F3CFEC038BDA509228EF74BCC17C2F92E27F"
+                  },
+                  {
+                      "file":  "control/007_f3_reconcile.sql",
+                      "sha256":  "BF91820ACDD57D38A0A3553FFD213BAA6EAFBC7C57B091A765145BDD387BE485"
+                  },
+                  {
+                      "file":  "control/fixtures/031_runtime_ddl_negatives.sql",
+                      "sha256":  "F75304F4E829F7F0C4AC6EB2419F93E8A56D92E6AEA072F68026062876A3C5C6"
+                  },
+                  {
+                      "file":  "control/008_f4b_pristine.sql",
+                      "sha256":  "9424EA20F8608793DDC27E9EAB569880957580CB7024CFD3CB00AF8DAA04FFFB"
+                  },
+                  {
+                      "file":  "control/fixtures/053_cleanup_full_batch.sql",
+                      "sha256":  "5F1249FD98C9DE599FE1DEEAE2D4970AD6DBCF7551729A489047D374D02F18AE"
+                  },
+                  {
+                      "file":  "control/fixtures/073_real_maintenance.sql",
+                      "sha256":  "EE616A375587FE0E8FE39976A833151A9F1711A4F8250D4078D0C01EF1676E43"
+                  },
+                  {
+                      "file":  "control/fixtures/074_cleanup_denied.sql",
+                      "sha256":  "E02F162BD5B9E206AFD9465594835E7D3E13F5692C518BD8DFC917B3BAD1D32D"
+                  },
+                  {
+                      "file":  "control/f5/.gitignore",
+                      "sha256":  "C73CFF0E8430AE13F7FAC100BF544F67959D431C15CDC9A3925BC3C86D7128A0"
+                  },
+                  {
+                      "file":  "control/f5/101_observe_fault.sql",
+                      "sha256":  "46C17775661B64A200F98F14CD2D4879CC79D86FD9C7FB09F5CB7AF4A8566D7A"
+                  },
+                  {
+                      "file":  "control/f5/102_statement_timeout.sql",
+                      "sha256":  "D68A45E663C1AA276F39CEFC75B46DF547C9D40C75A32214C00935AAF8F39ED8"
+                  },
+                  {
+                      "file":  "control/f5/auth9.spec",
+                      "sha256":  "337444807D3A48F46B96B90B93F59A871DBF46DF7F60AB37C5A36F444B26A402"
+                  },
+                  {
+                      "file":  "control/f5/cleanup12.spec",
+                      "sha256":  "75A363C4C5FA34476151D966F0AF13770E71BBFE052BAC4700B15B769CFD6F2D"
+                  },
+                  {
+                      "file":  "control/f5/go.mod",
+                      "sha256":  "5B7882CD966CCB67329BD36F2F7F1AC469956FD11DA66DBE8D9A6F8EBDC7C297"
+                  },
+                  {
+                      "file":  "control/f5/harness_test.go",
+                      "sha256":  "36CD8E88CC318B9CF711ADAB24726E2392C944EC8E4D17A2583AEAE85627C2C3"
+                  },
+                  {
+                      "file":  "control/f5/locks2.spec",
+                      "sha256":  "CDC3EC0A2D3EE2DC306BF42DD5C92BB95B381F8B5C0706948EBEF9CBC490881C"
+                  },
+                  {
+                      "file":  "control/f5/main.go",
+                      "sha256":  "2C5E79E62824B98554FCDB00DFED1BB8FDFC2988BE2D105EF1B534A077402A2F"
+                  },
+                  {
+                      "file":  "control/f5/manifest.json",
+                      "sha256":  "4AF383E5713C2B6ACC755EF24BB3D9851675F76C8C2F9C9B6F2EC8834B012FB9"
+                  },
+                  {
+                      "file":  "control/f5/MATRIX.md",
+                      "sha256":  "42B70C5875C350FC9B198F64DCBB7B2B8AD05BA6ADA4DA322B8D714809463AA8"
+                  },
+                  {
+                      "file":  "control/f5/proxy.go",
+                      "sha256":  "2A3D633746AEB9DA599D1CD44A9EFFADEFAAE47940EA098D5EE5ACD72CF94FFE"
+                  },
+                  {
+                      "file":  "control/f5/README.md",
+                      "sha256":  "56297A535FCA2239E3D28C324DE7BFE022B8D1554898128EFCF0A184BA9540E1"
+                  },
+                  {
+                      "file":  "control/f5/103_final_concurrency_state.sql",
+                      "sha256":  "5050E6C5820D37ECB24AFCBAED42D0707226F0CFF57721ECF1CB33D8D25CABAA"
+                  },
+                  {
+                      "file":  "control/f5/F5B_RESULTS.md",
+                      "sha256":  "9D6293EE7B1FE06149E9A12C9EF68500FD7C9E80E53E70BEAADDF5BE190B3734"
+                  },
+                  {
+                      "file":  "control/f5/F5B_RESULTS.json",
+                      "sha256":  "D8D44F965BB539661C01930148A353AD3F4F4E61548E05DB908FB95DF6EED6DF"
+                  },
+                  {
+                      "file":  "control/f5/105_fault_client.sql",
+                      "sha256":  "2349E4BF1AAC84B0A598523324F8FAF9FE5B7958F26CC352A62168C65772CB24"
+                  },
+                  {
+                      "file":  "control/f5/106_sql_error_client.sql",
+                      "sha256":  "4E1AD7EBFCF019B4D0E3707ED5092A9AE2502946E5DA74B96D35EF5BFB554276"
+                  },
+                  {
+                      "file":  "control/f5/110_revoke_seed.sql",
+                      "sha256":  "80E94D3709FB47A209920E340F0BC16C5C6AE05C47D2CD70D6782A029CA9813F"
+                  },
+                  {
+                      "file":  "control/f5/111_revoke_confirmed.sql",
+                      "sha256":  "C810854E3E3D56AA2064EE25FE799E58BE6D478D6DC28A8CF7B95D0E18FCE2F5"
+                  },
+                  {
+                      "file":  "control/f5/112_renew_after_revoke.sql",
+                      "sha256":  "9F115FC3EB7AEFD8830DCAB2B0F2516D64C2C0EEBEEAF73CB68755A9D22D7BE6"
+                  },
+                  {
+                      "file":  "control/f5/113_revoke_final.sql",
+                      "sha256":  "1642F4432DEDA07B9117C912ACC5190F2B1153742E3E52834012B60E3432E880"
+                  },
+                  {
+                      "file":  "control/f5/114_revoke_teardown.sql",
+                      "sha256":  "E2B851C2AEF5080715DB141A3412305F6633A2EB501AE0027B1BDEB3AF5E3569"
+                  },
+                  {
+                      "file":  "control/f5/115_global_confirmed.sql",
+                      "sha256":  "DC049F3FEED573B421FAFCACB90D3C38066C2022B55CF2AD3E98897829A8830F"
+                  },
+                  {
+                      "file":  "control/f5/116_global_final.sql",
+                      "sha256":  "851C585D97FA192673E1DCDAE33D383A850EFE740F2ABE13B4E194FEDA16D9F3"
+                  },
+                  {
+                      "file":  "control/f5/117_final_fault_state.sql",
+                      "sha256":  "88F8724CF0A0C088C9E6DDE4C425AC51CCE97AA7CBA9FF40C51449F36AAEB28D"
+                  },
+                  {
+                      "file":  "control/f5/F5C_RESULTS.md",
+                      "sha256":  "F6E043C545F62239D428E597CD9D0873B1EB161CE6F95E08524C6952F35786B8"
+                  },
+                  {
+                      "file":  "control/f6/.gitignore",
+                      "sha256":  "C73CFF0E8430AE13F7FAC100BF544F67959D431C15CDC9A3925BC3C86D7128A0"
+                  },
+                  {
+                      "file":  "control/f6/cancel_exact.sql",
+                      "sha256":  "554187F9E53CB02AFFB97CF1FF568AF9E91B0BBFB143DBDFF02282E8BE93CF86"
+                  },
+                  {
+                      "file":  "control/f6/cancel_waiter.sql",
+                      "sha256":  "54C7A8A88DBBC40EB7A3B9180D5D81B3ACD31E6C6ECAB7CB29AD90BA0AE42FAF"
+                  },
+                  {
+                      "file":  "control/f6/Check-F6.ps1",
+                      "sha256":  "A6CB83C35B69AA7F2DF64DB2343FDC100BE52FAC3CE076F4AAC3663935FDC51F"
+                  },
+                  {
+                      "file":  "control/f6/checks.go",
+                      "sha256":  "DB3D4D4549029CCDA20C990B11E9AECD0C8B5D2399BE661572744DF907CC51EB"
+                  },
+                  {
+                      "file":  "control/f6/checks_test.go",
+                      "sha256":  "F89330AEFE21342A6762858FA507799D62D4C30C1A3DD93DDE6403D1D46CA47E"
+                  },
+                  {
+                      "file":  "control/f6/check_transition.sql",
+                      "sha256":  "DCB07B66969E135DA90AC86ECB86EC541BEB9E24F5D38EDEA3176D7AD0CD66A1"
+                  },
+                  {
+                      "file":  "control/f6/dependency_inventory.sql",
+                      "sha256":  "83EC1536EBBFAFFE15CE8C906DB8CB0DA79EC4C38F155376021FA7CF539EA24D"
+                  },
+                  {
+                      "file":  "control/f6/go.mod",
+                      "sha256":  "CA10D910A1A0EE2AB5A48094F9A3D9116E00C2CD750773F8517EF02F69C6CC56"
+                  },
+                  {
+                      "file":  "control/f6/holder.sql",
+                      "sha256":  "62A86B68E375722614E2F5A90973C99244D9D0EE20EC9C80650E946C9F63CF42"
+                  },
+                  {
+                      "file":  "control/f6/lock_timeout.sql",
+                      "sha256":  "3DD4B07EC787F271EEB091B5B1B699FAAF65133AD0362B0A65A3398E0E80FCCE"
+                  },
+                  {
+                      "file":  "control/f6/manifest.json",
+                      "sha256":  "5353C75599F8243857AD75F7F9F2BB48E60E51FE828BCCA22225B6349BAB72F1"
+                  },
+                  {
+                      "file":  "control/f6/observe_cancel.sql",
+                      "sha256":  "A156A8CF93C297FE0C9E08C1D37BA005915A7BE13F63C9C9379CF5DF12E03EFC"
+                  },
+                  {
+                      "file":  "control/f6/Print-F6Commands.ps1",
+                      "sha256":  "ED5C518F24A794DCECED32B5D0AEC3E8EC082C8DC3741641075DFA2C01612D6A"
+                  },
+                  {
+                      "file":  "control/f6/README.md",
+                      "sha256":  "49C8CB9BD68FCD7B0E63490407CB6BB588FDDE887A0A6991EEA3866C0F6F193E"
+                  },
+                  {
+                      "file":  "control/f6/reconcile_timeout.sql",
+                      "sha256":  "3FECF7317BF3CC8AF5D5DB7F5D1F01EAA2525C1FB6ED5650214F72C050F980CC"
+                  },
+                  {
+                      "file":  "control/f6/statement_timeout.sql",
+                      "sha256":  "1FC225C6C650AD65D1C776710EA5C62BE9E41240E7EDD5CB0681A1B4FAAEB7E1"
                   }
-              ]
+              ],
+    "execution_scope":  "F1_F2_F3_F4A_F4B_completed; concurrency_F5_and_Goose_Down_not_executed",
+    "baseline_result":  "001_002_COMMIT;010_PASS_twice;020_14_negatives_ROLLBACK_cleanup_PASS;system_id_unchanged",
+    "execution_detail":  {
+                             "Docker":  true,
+                             "PostgreSQL_identification":  true,
+                             "B1_baseline":  true,
+                             "Goose":  true,
+                             "C_D_E":  "C_D_E_installed_enabled_only_F",
+                             "bootstrap_credential_only":  false
+                         },
+    "f3_result":  {
+                      "goose_version":  "v3.29.0",
+                      "migration_version":  4,
+                      "real_migrator_login":  "PASS",
+                      "real_runtime_login":  "PASS",
+                      "metadata":  "PASS",
+                      "integrity_fixture":  "PASS_47_negatives_and_positive_cases_explicit_ROLLBACK",
+                      "runtime_ddl_negatives":  "PASS_10_via_real_TCP_runtime",
+                      "reconciliation":  "PASS_version4_four_tables_empty_owner_ACL_intact",
+                      "C_D_E":  "NOT_APPLIED"
+                  },
+    "f4a_result":  {
+                       "roles":  "3_provisioned_COMMIT",
+                       "C":  "9_installed_source_owner_ACL_verified_COMMIT",
+                       "D":  "executors_and_enabled_PASS",
+                       "fixtures060":  "9_function_paths_PASS_ROLLBACK",
+                       "fixtures061":  "9_fail_closed_cases_PASS_ROLLBACK",
+                       "real_auth_login":  "PASS",
+                       "real_tenant_login":  "PASS",
+                       "auth_negatives":  "PASS_26_real_TCP_auth_ROLLBACK",
+                       "tenant_negatives":  "PASS_33_real_TCP_tenant_ROLLBACK",
+                       "Goose":  4,
+                       "rows":  "all_four_tables_empty",
+                       "next":  "F4B_requires_separate_authorization; no_C_D_reinstall"
+                   },
+    "f4b_result":  {
+                       "roles":  "cleanup_executor_NOLOGIN_maintenance_LOGIN_COMMIT",
+                       "install":  "cleanup_sessions_integer_default100_COMMIT",
+                       "metadata":  "dormant_and_enabled_PASS",
+                       "retention":  "8_fixtures_PASS_4_deleted_4_retained_ROLLBACK",
+                       "batch1":  "1_deleted_PASS_ROLLBACK",
+                       "batch100":  "100_of101_deleted_PASS_ROLLBACK",
+                       "real_maintenance":  "login_empty_cleanup_12_negatives_PASS",
+                       "real_auth_tenant":  "cleanup_denied_each_PASS",
+                       "final":  "Goose4_four_tables_empty",
+                       "F5":  "not_executed_separate_authorization_required"
+                   },
+    "f5a_result":  {
+                       "native_tool":  "isolationtester18.6_available_V_verified_no_SQL",
+                       "compiler":  "Go1.27.2_stdlib_only",
+                       "native_permutations":  23,
+                       "inherited_E":  12,
+                       "extra_auth":  9,
+                       "multi_parent":  2,
+                       "self_tests":  "7_PASS",
+                       "vet":  "PASS",
+                       "windows_linux_builds":  "PASS",
+                       "offline_pins":  "PASS",
+                       "races_executed":  false,
+                       "faults_injected":  false,
+                       "native_SQL_parse":  "NOT_EXECUTED",
+                       "expected_outputs":  "PENDING_REAL_CAPTURE_AND_REVIEW"
+                   },
+    "f5b_result":  {
+                       "executed":  23,
+                       "approved":  23,
+                       "waits":  18,
+                       "deadlocks":  0,
+                       "timeouts":  0,
+                       "harness_seconds_total":  18.0508514,
+                       "final_rows":  "0_in_all_four_tables",
+                       "native_workers":  0,
+                       "prepared_transactions":  0,
+                       "Goose":  4,
+                       "faults":  "NOT_EXECUTED",
+                       "scope":  "bounded_23_SQL_schedules_only",
+                       "dedicated_renew_after_revoke":  "NOT_INCLUDED_IN_APPROVED23"
+                   },
+    "f5c_result":  {
+                       "before_commit":  "clientUNKNOWN_reconciledROLLBACK_rows2",
+                       "lost_ack":  "clientUNKNOWN_serverACKseen_reconciledCOMMIT_rows0",
+                       "sql_error":  "22023_no_success_PASS",
+                       "atomicity":  "22008_25000_ROLLBACK_PASS",
+                       "post_logout":  "confirmedCOMMIT_new_real_auth_invalid_timestamps_epochs_intact",
+                       "post_global_epoch":  "confirmedCOMMIT_new_real_auth_invalid_Identity1_snapshot0",
+                       "final":  "Goose4_empty_four_tables_no_test_backends_C_D_E_intact",
+                       "full_verification":  "pending_timeout_cancel_Down_reUp_and_backend_scope"
+                   },
+    "f6a_result":  {
+                       "Down_reUp":  "prepared_explicit_admin_retirement_then_latest_history_checks",
+                       "timeouts_cancel":  "prepared_real_maintenance_exact_PID_start_blocker_guard",
+                       "offline_tests":  7,
+                       "vet":  "PASS",
+                       "compilation":  "Go1.27.2_PASS",
+                       "SQL_execution":  false,
+                       "Docker_execution":  false,
+                       "backend":  "explicit_pending_contracts_not_implemented"
+                   }
 }
