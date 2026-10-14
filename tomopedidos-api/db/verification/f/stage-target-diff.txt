@@ -1,0 +1,142 @@
+F target-only staging diff; originals remain untouched. No credentials/data captured.
+FILE administration/b2a-assert-state.sql : 4 destination replacements
+- source line 31:         IF pg_catalog.has_database_privilege(v_role.oid,'tomopedidos_local','CREATE')
++ target line counterpart:         IF pg_catalog.has_database_privilege(v_role.oid,'tp_b2a_f_20261014_r01','CREATE')
+- source line 32:             OR pg_catalog.has_database_privilege(v_role.oid,'tomopedidos_local','TEMP')
++ target line counterpart:             OR pg_catalog.has_database_privilege(v_role.oid,'tp_b2a_f_20261014_r01','TEMP')
+- source line 33:             OR pg_catalog.has_database_privilege(v_role.oid,'tomopedidos_local','CONNECT WITH GRANT OPTION')
++ target line counterpart:             OR pg_catalog.has_database_privilege(v_role.oid,'tp_b2a_f_20261014_r01','CONNECT WITH GRANT OPTION')
+- source line 34:             OR pg_catalog.has_database_privilege(v_role.oid,'tomopedidos_local','CONNECT') IS DISTINCT FROM
++ target line counterpart:             OR pg_catalog.has_database_privilege(v_role.oid,'tp_b2a_f_20261014_r01','CONNECT') IS DISTINCT FROM
+FILE administration/b2a-auth-disable-v1.sql : 1 destination replacements
+- source line 20: REVOKE CONNECT ON DATABASE tomopedidos_local FROM tomopedidos_auth_runtime;
++ target line counterpart: REVOKE CONNECT ON DATABASE tp_b2a_f_20261014_r01 FROM tomopedidos_auth_runtime;
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/b2a-auth-enable-v1.sql : 1 destination replacements
+- source line 11: GRANT CONNECT ON DATABASE tomopedidos_local TO tomopedidos_auth_runtime;
++ target line counterpart: GRANT CONNECT ON DATABASE tp_b2a_f_20261014_r01 TO tomopedidos_auth_runtime;
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/b2a-auth-functions-v1.sql : 1 destination replacements
+- source line 17:     IF pg_catalog.current_database() <> 'tomopedidos_local'
++ target line counterpart:     IF pg_catalog.current_database() <> 'tp_b2a_f_20261014_r01'
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/b2a-auth-grants-v1.sql : 0 destination replacements
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/b2a-auth-ungrant-v1.sql : 0 destination replacements
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/b2a-role-preflight.sql : 1 destination replacements
+- source line 4:     IF pg_catalog.current_database() <> 'tomopedidos_local'
++ target line counterpart:     IF pg_catalog.current_database() <> 'tp_b2a_f_20261014_r01'
+FILE administration/b2a-role-provision-v1.sql : 1 destination replacements
+- source line 37:         OR pg_catalog.has_database_privilege('tomopedidos_auth_runtime','tomopedidos_local','CONNECT') THEN
++ target line counterpart:         OR pg_catalog.has_database_privilege('tomopedidos_auth_runtime','tp_b2a_f_20261014_r01','CONNECT') THEN
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/retention/b2a-cleanup-assert.sql : 0 destination replacements
+FILE administration/retention/b2a-cleanup-batch.sql : 1 destination replacements
+- source line 11:     IF current_database() <> 'tomopedidos_local'
++ target line counterpart:     IF current_database() <> 'tp_b2a_f_20261014_r01'
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/retention/b2a-cleanup-disable-v1.sql : 1 destination replacements
+- source line 9: REVOKE CONNECT ON DATABASE tomopedidos_local FROM tomopedidos_session_maintenance;
++ target line counterpart: REVOKE CONNECT ON DATABASE tp_b2a_f_20261014_r01 FROM tomopedidos_session_maintenance;
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/retention/b2a-cleanup-enable-v1.sql : 1 destination replacements
+- source line 10: GRANT CONNECT ON DATABASE tomopedidos_local TO tomopedidos_session_maintenance;
++ target line counterpart: GRANT CONNECT ON DATABASE tp_b2a_f_20261014_r01 TO tomopedidos_session_maintenance;
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/retention/b2a-cleanup-role-provision-v1.sql : 0 destination replacements
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/retention/b2a-session-cleanup-down-v1.sql : 0 destination replacements
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE administration/retention/b2a-session-cleanup-v1.sql : 0 destination replacements
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE bootstrap/001_roles.sql : 1 destination replacements
+- source line 7:   IF current_database() <> 'tomopedidos_local'
++ target line counterpart:   IF current_database() <> 'tp_b2a_f_20261014_r01'
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE bootstrap/002_schema_privileges.sql : 5 destination replacements
+- source line 11:   IF current_database() <> 'tomopedidos_local' OR session_user <> 'tomopedidos_bootstrap'
++ target line counterpart:   IF current_database() <> 'tp_b2a_f_20261014_r01' OR session_user <> 'tomopedidos_bootstrap'
+- source line 68: REVOKE ALL ON DATABASE tomopedidos_local FROM PUBLIC, tomopedidos_migrator, tomopedidos_runtime;
++ target line counterpart: REVOKE ALL ON DATABASE tp_b2a_f_20261014_r01 FROM PUBLIC, tomopedidos_migrator, tomopedidos_runtime;
+- source line 69: GRANT CONNECT ON DATABASE tomopedidos_local TO tomopedidos_migrator, tomopedidos_runtime;
++ target line counterpart: GRANT CONNECT ON DATABASE tp_b2a_f_20261014_r01 TO tomopedidos_migrator, tomopedidos_runtime;
+- source line 98: ALTER ROLE tomopedidos_migrator IN DATABASE tomopedidos_local SET search_path TO migration_meta, pg_catalog;
++ target line counterpart: ALTER ROLE tomopedidos_migrator IN DATABASE tp_b2a_f_20261014_r01 SET search_path TO migration_meta, pg_catalog;
+- source line 99: ALTER ROLE tomopedidos_runtime IN DATABASE tomopedidos_local SET search_path TO pg_catalog;
++ target line counterpart: ALTER ROLE tomopedidos_runtime IN DATABASE tp_b2a_f_20261014_r01 SET search_path TO pg_catalog;
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE migrations/00001_identity_credentials.sql : 0 destination replacements
+FILE migrations/00002_audience_sessions.sql : 0 destination replacements
+FILE migrations/00003_identity_guards_indexes.sql : 0 destination replacements
+FILE migrations/00004_session_cleanup_index.sql : 0 destination replacements
+FILE verification/010_b1_metadata.sql : 1 destination replacements
+- source line 11:   IF current_database() <> 'tomopedidos_local' OR session_user<>'tomopedidos_bootstrap'
++ target line counterpart:   IF current_database() <> 'tp_b2a_f_20261014_r01' OR session_user<>'tomopedidos_bootstrap'
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE verification/020_b1_effective_privileges.sql : 1 destination replacements
+- source line 7:   IF current_database()<>'tomopedidos_local' OR session_user<>'tomopedidos_bootstrap'
++ target line counterpart:   IF current_database()<>'tp_b2a_f_20261014_r01' OR session_user<>'tomopedidos_bootstrap'
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE verification/040_b2a_role_isolation.sql : 0 destination replacements
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE verification/041_b2a_caller_negatives.sql : 1 destination replacements
+- source line 12:     IF current_database() <> 'tomopedidos_local'
++ target line counterpart:     IF current_database() <> 'tp_b2a_f_20261014_r01'
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE verification/050_b2a_retention_concurrency.sql : 0 destination replacements
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE verification/051_b2a_cleanup_failures.sql : 0 destination replacements
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE verification/052_b2a_cleanup_metadata.sql : 0 destination replacements
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE verification/preflight_002_readonly.sql : 0 destination replacements
++ entry prefix: -- F target-only staged copy; original hash is in stage-manifest.json.
+\set ON_ERROR_STOP on
+\ir /f/control/001_preflight.sql
+FILE verification/isolation/b2a_cleanup.spec : 1 destination replacements
+- source line 8:     IF current_database() <> 'tomopedidos_local' OR session_user <> 'tomopedidos_bootstrap'
++ target line counterpart:     IF current_database() <> 'tp_b2a_f_20261014_r01' OR session_user <> 'tomopedidos_bootstrap'
++ setup guard: DO $f_target$ BEGIN IF current_database()<>'tp_b2a_f_20261014_r01' OR current_setting('cluster_name')<>'tp-b2a-f-20261014-r01' OR current_setting('server_version_num')::integer<>180006 OR session_user<>'tomopedidos_bootstrap' OR (SELECT system_identifier::text FROM pg_control_system())<>'__F_SYSTEM_ID_PENDING__' THEN RAISE EXCEPTION 'F isolation exact target failed'; END IF; END; $f_target$;

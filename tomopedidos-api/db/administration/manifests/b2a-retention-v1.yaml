@@ -1,0 +1,143 @@
+schema_version: 1
+package: b2a-session-retention
+version: 1
+status: written_static_only_not_applied
+installation: administrative_function_separate_from_goose_index
+target:
+  database: tomopedidos_local
+  postgres_major: 18
+  administrator: tomopedidos_bootstrap
+  isolated_host_volume_and_execution_authorization_required: true
+policy:
+  terminal_expression: "LEAST(idle_expires_at, absolute_expires_at, revoked_at, expired_at)"
+  retention_seconds: 2592000
+  equality_eligible: true
+  epoch_only: natural_expiration_plus_30d_no_epoch_timestamp
+  batch_default_candidate: 100
+  batch_min: 1
+  batch_max: 100
+  discovery_limit: candidates_not_only_deleted_rows
+  delete_scope: identity.sessions_only
+  deletes_identities_credentials_epochs_audit_CSRF_keys: false
+locks:
+  isolation: read_committed
+  phases: [all_identities_share_UUID_order, all_audiences_share_identity_C_order, sessions_update_UUID_order]
+  no_lock_upgrade: true
+  skip_locked: false
+  reread_after_wait: true
+  clock_after_locks: true
+  cutoff_revalidated_per_row_and_DELETE: true
+  observed_clock_regression: abort_entire_batch_22008
+  calls_per_transaction: 1
+  automatic_retry: false
+function:
+  signature: "identity.cleanup_sessions(integer)"
+  input_names: [p_batch_size]
+  input_types: [integer]
+  default_sql: "100"
+  returns_sql: "RETURNS TABLE (examined integer, deleted integer, skipped integer, checked_at timestamptz)"
+  owner: tomopedidos_cleanup_executor
+  language: plpgsql
+  security_definer: true
+  volatility: volatile
+  parallel: unsafe
+  search_path: [pg_catalog, pg_temp]
+  previous_source: absent_initial_install
+  source_sha256_lf: D24C85C89BF7227E77192DCB21A207172BFB9BDE4699B39DCF3AC35288F8B9B7
+roles_proposed_not_provisioned:
+  tomopedidos_cleanup_executor:
+    login: false
+    inherit: false
+    elevated_attributes: false
+    memberships: []
+    owns: cleanup_function_only
+    schema_usage: [identity]
+    table_permissions:
+      identity.identities:
+        select: [id]
+        update_for_locks_only: [id]
+      identity.audience_revocations:
+        select: [identity_id, audience]
+        update_for_locks_only: [audience]
+      identity.sessions:
+        select: [session_id, identity_id, audience, created_at, last_activity_at, idle_expires_at, absolute_expires_at, revoked_at, expired_at]
+        update_for_locks_only: [session_id]
+        delete: true
+  tomopedidos_session_maintenance:
+    login: true
+    password: null
+    inherit: false
+    elevated_attributes: false
+    memberships: []
+    owns: []
+    after_enable_only: [connect_local, usage_identity, execute_cleanup_integer]
+    direct_table_access: false
+    credential_HBA_setup: separate_private_authorized_procedure
+security:
+  immediate_function_acl: owner_only
+  operational_caller_after_enable: tomopedidos_session_maintenance_only
+  auth_tenant_public_migrator_execute: false
+  no_B1_A_B_C_D_edits: true
+  no_default_ACL_edits: true
+  no_role_memberships: true
+  no_role_drop_or_cascade: true
+  no_secrets_in_results: true
+transitions:
+  roles: ../retention/b2a-cleanup-role-provision-v1.sql
+  initial_function_and_executor_permissions: ../retention/b2a-session-cleanup-v1.sql
+  enable: ../retention/b2a-cleanup-enable-v1.sql
+  disable: ../retention/b2a-cleanup-disable-v1.sql
+  administrative_down: ../retention/b2a-session-cleanup-down-v1.sql
+  index_up_down: ../../migrations/00004_session_cleanup_index.sql
+  batch_requires_cleanup_authorization: ../retention/b2a-cleanup-batch.sql
+verification:
+  offline: ../../verification/check_b2a_delivery_e.ps1
+  retention: ../../verification/050_b2a_retention_concurrency.sql
+  failures: ../../verification/051_b2a_cleanup_failures.sql
+  metadata: ../../verification/052_b2a_cleanup_metadata.sql
+  concurrency: ../../verification/isolation/b2a_cleanup.spec
+  concurrency_permutations_prepared: 12
+  isolationtester_installed_or_executed: false
+  PostgreSQL_executed: false
+pending_external_failure_harness:
+  - lock_timeout_55P03_no_delete
+  - cancellation_statement_timeout_57014_no_delete
+  - lost_commit_response_both_server_outcomes_no_blind_retry
+  - multi_parent_global_lock_order_stress
+  - controlled_VM_clock_discontinuity_not_host_clock
+recovery:
+  before_commit: rollback_stop
+  after_commit: disable_drain_administrative_down_then_index_down_authorized_separately
+  deleted_data: not_restored_by_Down_backup_PITR_requires_separate_review
+  commit_ambiguous: unknown_pause_scheduler_new_connection_reconcile_no_retry
+pinned_files:
+  - file: ../retention/b2a-session-cleanup-v1.sql
+    sha256: 4FF8F419C9483BB0FDA88F6E5ADBD01A45F290860861EF605264337F7F7C01AA
+  - file: ../retention/b2a-cleanup-assert.sql
+    sha256: 43D461BFFB38B4997D5ADB3EA7B85CA88E7A8266D50F44D9ACE8819A045D0B6A
+  - file: ../retention/b2a-cleanup-role-provision-v1.sql
+    sha256: A3F78EEBAED5FA890DB069289594492723F25AB5994D9400DAD4981865C03895
+  - file: ../retention/b2a-cleanup-enable-v1.sql
+    sha256: E28F259852916B96815EE2760D5E62EAA67A7A4423366708F888E759A99088D7
+  - file: ../retention/b2a-cleanup-disable-v1.sql
+    sha256: 8D1976F0A7E5FAE91C3B20EC28CF5226213F97332429917C3EABA2A6F8949B79
+  - file: ../retention/b2a-session-cleanup-down-v1.sql
+    sha256: 066BB82B5293A7B85CEAE98B55A81EE6521387D3F24ECAFED2261908C56D1989
+  - file: ../retention/b2a-cleanup-batch.sql
+    sha256: 3FC39FBC74D75E87C271DEFE8A0A503B81E6E0E1C13557B96E53BDF32D268444
+  - file: ../../migrations/00004_session_cleanup_index.sql
+    sha256: 37BE379E0D91F8ACA0C75A36E6D4B0E39697B8EE9B219BDD479D8C52FF95E223
+  - file: ../../verification/050_b2a_retention_concurrency.sql
+    sha256: 68AF40F0E0FD8C54C14C3A700A53C7C864FBBD9F33FA6BFBA8E58DEAD2E1BF2B
+  - file: ../../verification/051_b2a_cleanup_failures.sql
+    sha256: 93AE232BAF458F2036DAE091FFAA7D3333FCD855CE0401372E773766CC6CBC84
+  - file: ../../verification/052_b2a_cleanup_metadata.sql
+    sha256: 507A0C34588978DEBEEFEE8F57358F428BD219786668593262AB61F1EB0ED339
+  - file: ../../verification/isolation/b2a_cleanup.spec
+    sha256: B9CABD5EA7F5BDF087BEA5C2E5D10B4F85E29523D6E03C2207DB062EEE6F8A27
+  - file: ../../verification/check_b2a_delivery_e.ps1
+    sha256: 4B118FB81A2450B8690222B0C787A34E6687EDF83E812D1034EBCA5906EB4005
+  - file: ../../../../docs/runbooks/b2a-session-retention.md
+    sha256: A9F0011DEFC0434AC7B65A210039FF1D6C97EC6806058E397F47FC69638C6B03
+  - file: b2a-roles-v1.yaml
+    sha256: A1962156E42F4D121A350A9A2FC2608F204D684F21A2B01090C05758858A7CDB

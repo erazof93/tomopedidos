@@ -1,0 +1,81 @@
+
+name: ${COMPOSE_PROJECT_NAME:-tomopedidos-local}
+
+services:
+  postgres:
+    image: postgres:18.6-bookworm@sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Configura POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?Configura POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-55432}:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+
+    restart: "no"
+
+  # Goose: migraciones SQL ejecutadas manualmente
+  goose:
+    profiles: ["tools"]
+
+    build:
+      context: ./docker
+      dockerfile: goose.Dockerfile
+
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DB:?Configura POSTGRES_DB}
+      PGUSER: tomopedidos_migrator
+      PGPASSWORD: ${DB_MIGRATION_PASSWORD:-}
+      PGSSLMODE: disable
+      GOOSE_DRIVER: postgres
+      GOOSE_DBSTRING: "host=postgres port=5432 dbname=${POSTGRES_DB:?Configura POSTGRES_DB} user=tomopedidos_migrator sslmode=disable options='-c role=tp_owner -c search_path=migration_meta,pg_catalog'"
+      GOOSE_MIGRATION_DIR: /migrations
+
+    volumes:
+      - type: bind
+        source: ./tomopedidos-api/db/migrations
+        target: /migrations
+        read_only: true
+        bind:
+          create_host_path: false
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    working_dir: /migrations
+    command: ["-version"]
+
+  # sqlc: generación de código Go desde SQL
+  sqlc:
+    profiles: ["tools"]
+    image: sqlc/sqlc:1.31.1
+
+    volumes:
+      - type: bind
+        source: ./tomopedidos-api
+        target: /app
+        bind:
+          create_host_path: false
+
+    working_dir: /app
+    command: ["version"]
+
+volumes:
+  postgres_data:

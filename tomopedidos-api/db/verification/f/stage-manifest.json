@@ -1,0 +1,409 @@
+{
+    "run_id":  "tp-b2a-f-20261014-r01",
+    "database":  "tp_b2a_f_20261014_r01",
+    "generated_offline":  true,
+    "SQL_executed":  false,
+    "native_spec_blocked_until_system_id_enrolled":  true,
+    "files":  [
+                  {
+                      "source":  "administration/b2a-assert-state.sql",
+                      "source_sha256":  "B12A022AC01743C1A8C614DEA6FF399A3F98C02E85E3A4409E8E72DB2D39E65F",
+                      "staged":  "staged/administration/b2a-assert-state.sql",
+                      "staged_sha256":  "6FAE6CBFCDE2C0F7D0BE872576FE29E0ECF403065965F9AE5ABBC15F161EAE12",
+                      "target_replacements":  4,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  false
+                  },
+                  {
+                      "source":  "administration/b2a-auth-disable-v1.sql",
+                      "source_sha256":  "E41FFA40FFBA69BEB3DC349521F97C313BCD1904AB53DD409EC070384B7D393E",
+                      "staged":  "staged/administration/b2a-auth-disable-v1.sql",
+                      "staged_sha256":  "236DD9B3E54F41B160A17558EECFDB02A685811DB6BFE63B11602B59BC95821C",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/b2a-auth-enable-v1.sql",
+                      "source_sha256":  "3F5E8081126DE338CA76815355A1DE6473E2CF2DB8F08D1F1FDB0DDAB3882C1A",
+                      "staged":  "staged/administration/b2a-auth-enable-v1.sql",
+                      "staged_sha256":  "C4C5170C64253C4FAE381BD3D6EB5BE0B4C6525A6A6A2CA765B79A908EF4816A",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/b2a-auth-functions-v1.sql",
+                      "source_sha256":  "D22C52F086E06A7AFEE3CC59C57C1F03631EA74446FD9315D15A79F392B023C2",
+                      "staged":  "staged/administration/b2a-auth-functions-v1.sql",
+                      "staged_sha256":  "1F5F490334896DBF56F43051EBA5C1AD0D66A4B7AE5DA970409A185E5E16D8BC",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+                                                   "identity.lookup_credential|F53AB501509EF67AF3325B6AB2FE18B2586995295D3148D394162CEC0728720B",
+                                                   "identity.issue_session|E0E4D81FED4D047BD447F95647DF4517B30B109885E2D9DEA5CF75E69ED4D141",
+                                                   "identity.validate_session|736057B501A47088E7FE8A77AEAD2A19D6AB880AC93877D53B071AE10E3AAC46",
+                                                   "identity.record_activity|C712CB021E5FDF5FF64C96F68EEE4BFA3D9AA54BE2B415D44AC88ED1ED4F7822",
+                                                   "identity.revoke_session|DEC02E132C4EE23000B3047C8EF24A5621730FA300DCB80D1E1C209EE139309F",
+                                                   "identity.mark_expired|9A9800B8D8BE26030B12BD732DE309EB8C8221806D4467272DE86957B3F08220",
+                                                   "identity.revoke_audience|218EEAA3AE40504F96AEF8A4D63EAAFF32C8485494BEE8ADDF2B1F504CE010C7",
+                                                   "identity.revoke_global|8FB466B18A96BD91ECC3FB0012D2CA91126E73C2067E13B51D001BD6E394E49F",
+                                                   "identity.rehash_conditional|7AA63818771E50B4641091A2AA61D2CABF9865A1F486862A8057A28AF39AAE91"
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/b2a-auth-grants-v1.sql",
+                      "source_sha256":  "23B8B3EB5FA476C4B63E55BF931FE2899EC0A0A12FF35714673662EF55A84192",
+                      "staged":  "staged/administration/b2a-auth-grants-v1.sql",
+                      "staged_sha256":  "E6CA634DDD0B4E997EFA4E1C775EBC7C58058CB7E14267FF3DA9904D534E3B10",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/b2a-auth-ungrant-v1.sql",
+                      "source_sha256":  "E8D6B108500633D7C8794B68122A9DFF1A07A48707C473E3DBB4864FC97EC15E",
+                      "staged":  "staged/administration/b2a-auth-ungrant-v1.sql",
+                      "staged_sha256":  "27DD0680F1B33CBE3847508C85D6CD50095387D08EF67FD5ABD41D8ED84699AF",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/b2a-role-preflight.sql",
+                      "source_sha256":  "B9D56E054A8185803BE246989CD8B5ADC5C9352DF9A51D961E417CB1955D8BDE",
+                      "staged":  "staged/administration/b2a-role-preflight.sql",
+                      "staged_sha256":  "AA89F246ADB0569580E4D7CBCC5C47400E0B4B7EEFD4493EE63FBB791B1AE70D",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  false
+                  },
+                  {
+                      "source":  "administration/b2a-role-provision-v1.sql",
+                      "source_sha256":  "F923E4CBD4FA06A59B368C25638DD06C4563330CD75B1CE6E11E244E571F5A9A",
+                      "staged":  "staged/administration/b2a-role-provision-v1.sql",
+                      "staged_sha256":  "FE394F4460E0CC0AC67371B5C54AF7116AC15EE7AFFFAAC9E8B339B5BF067805",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/retention/b2a-cleanup-assert.sql",
+                      "source_sha256":  "43D461BFFB38B4997D5ADB3EA7B85CA88E7A8266D50F44D9ACE8819A045D0B6A",
+                      "staged":  "staged/administration/retention/b2a-cleanup-assert.sql",
+                      "staged_sha256":  "43D461BFFB38B4997D5ADB3EA7B85CA88E7A8266D50F44D9ACE8819A045D0B6A",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  false
+                  },
+                  {
+                      "source":  "administration/retention/b2a-cleanup-batch.sql",
+                      "source_sha256":  "3FC39FBC74D75E87C271DEFE8A0A503B81E6E0E1C13557B96E53BDF32D268444",
+                      "staged":  "staged/administration/retention/b2a-cleanup-batch.sql",
+                      "staged_sha256":  "330501202E657E8E25E7E8375516650461B84292D2E9148C44062F7D930954E6",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/retention/b2a-cleanup-disable-v1.sql",
+                      "source_sha256":  "8D1976F0A7E5FAE91C3B20EC28CF5226213F97332429917C3EABA2A6F8949B79",
+                      "staged":  "staged/administration/retention/b2a-cleanup-disable-v1.sql",
+                      "staged_sha256":  "EE60ABCEE63567DB87E9E4DB48CFA16F4EB8DC5D780BA7C57670265B854D4D04",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/retention/b2a-cleanup-enable-v1.sql",
+                      "source_sha256":  "E28F259852916B96815EE2760D5E62EAA67A7A4423366708F888E759A99088D7",
+                      "staged":  "staged/administration/retention/b2a-cleanup-enable-v1.sql",
+                      "staged_sha256":  "F52B6D3655E7ADCCA7A20D18A8998CBFE27423254538D2706C35F9733001622A",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/retention/b2a-cleanup-role-provision-v1.sql",
+                      "source_sha256":  "A3F78EEBAED5FA890DB069289594492723F25AB5994D9400DAD4981865C03895",
+                      "staged":  "staged/administration/retention/b2a-cleanup-role-provision-v1.sql",
+                      "staged_sha256":  "4A0AF82620EF428FF11B2FD2D39A372FFDFDE6A70D9AAA61D23E1F54B73F1F49",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/retention/b2a-session-cleanup-down-v1.sql",
+                      "source_sha256":  "066BB82B5293A7B85CEAE98B55A81EE6521387D3F24ECAFED2261908C56D1989",
+                      "staged":  "staged/administration/retention/b2a-session-cleanup-down-v1.sql",
+                      "staged_sha256":  "F255CB367C84FC0CC40CA5375B918766A0CF8DE03904F68B2F276A5B987133F3",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "administration/retention/b2a-session-cleanup-v1.sql",
+                      "source_sha256":  "4FF8F419C9483BB0FDA88F6E5ADBD01A45F290860861EF605264337F7F7C01AA",
+                      "staged":  "staged/administration/retention/b2a-session-cleanup-v1.sql",
+                      "staged_sha256":  "5EBC1BB9AEE0D458AD1743560C61FD2A5F043A9EC1FCD7ACC4FEDC30C9F8CE67",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+                                                   "identity.cleanup_sessions|D24C85C89BF7227E77192DCB21A207172BFB9BDE4699B39DCF3AC35288F8B9B7"
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "bootstrap/001_roles.sql",
+                      "source_sha256":  "2EAA920E1DF044DDA6003FE347511F092347BBD26CEDB22EF0BB91F6CF83D5B2",
+                      "staged":  "staged/bootstrap/001_roles.sql",
+                      "staged_sha256":  "AF4A499B3E3005AA5965A544A1B205294F487E06BDB53C687C7CA166FD1E4255",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "bootstrap/002_schema_privileges.sql",
+                      "source_sha256":  "2AF021298BBBF5B58B942618C543941E6D80DC46E6EDE66F195FBB3A10A6E122",
+                      "staged":  "staged/bootstrap/002_schema_privileges.sql",
+                      "staged_sha256":  "5C44D8315EA6E79E6AAF0945D68FF5C0A416DDC8277FEC92C80E3AE39140CBED",
+                      "target_replacements":  5,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "migrations/00001_identity_credentials.sql",
+                      "source_sha256":  "AC7CA512915A8290FE20D5A3003C30BCD78407AB55DCC630923A65EADDAF4258",
+                      "staged":  "staged/migrations/00001_identity_credentials.sql",
+                      "staged_sha256":  "AC7CA512915A8290FE20D5A3003C30BCD78407AB55DCC630923A65EADDAF4258",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  true,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  false
+                  },
+                  {
+                      "source":  "migrations/00002_audience_sessions.sql",
+                      "source_sha256":  "13909AD7561780C9CC55A38A8B789A64D12C511E7A94BB4ACDA3036F12BB3F83",
+                      "staged":  "staged/migrations/00002_audience_sessions.sql",
+                      "staged_sha256":  "13909AD7561780C9CC55A38A8B789A64D12C511E7A94BB4ACDA3036F12BB3F83",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  true,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  false
+                  },
+                  {
+                      "source":  "migrations/00003_identity_guards_indexes.sql",
+                      "source_sha256":  "B1DC89967190A919E861F1B7FD77EB6E8EFCA9BA44DDA35B30C4D14AB7621B31",
+                      "staged":  "staged/migrations/00003_identity_guards_indexes.sql",
+                      "staged_sha256":  "B1DC89967190A919E861F1B7FD77EB6E8EFCA9BA44DDA35B30C4D14AB7621B31",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  true,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+                                                   "identity.guard_identities_update|B176619F2D601BA0000A9ECEB47D3E72551426A60C8037C3405434C94F0CCF61",
+                                                   "identity.guard_audience_revocations_update|E108CD444CAF84A4893D7807ED57FB667CAE2D4E9190D0AD862BAB65B96A07D7",
+                                                   "identity.guard_sessions_update|D86AB3A530DA909DCF40F2B3AAA4D1419CF048266558A3103FB797302126E26F"
+                                               ],
+                      "preflight_prefix":  false
+                  },
+                  {
+                      "source":  "migrations/00004_session_cleanup_index.sql",
+                      "source_sha256":  "37BE379E0D91F8ACA0C75A36E6D4B0E39697B8EE9B219BDD479D8C52FF95E223",
+                      "staged":  "staged/migrations/00004_session_cleanup_index.sql",
+                      "staged_sha256":  "37BE379E0D91F8ACA0C75A36E6D4B0E39697B8EE9B219BDD479D8C52FF95E223",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  true,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  false
+                  },
+                  {
+                      "source":  "verification/010_b1_metadata.sql",
+                      "source_sha256":  "221FCCC631324B164658B2478AE0A9441D07898DE976A492313C1E4A89216516",
+                      "staged":  "staged/verification/010_b1_metadata.sql",
+                      "staged_sha256":  "B96F013F387611A06EF3666E8A6B7FF52DC47D76714957E3EC9235768063D238",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "verification/020_b1_effective_privileges.sql",
+                      "source_sha256":  "A78A76800290D2D644EBFBFD8C7453834C2D5B87208AF12574B9AB8EF4A80FD8",
+                      "staged":  "staged/verification/020_b1_effective_privileges.sql",
+                      "staged_sha256":  "936695ABF75398EC6A606DA27B54BD8CD7A4678C9C72600F6E6A0A6F7CF38702",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "verification/040_b2a_role_isolation.sql",
+                      "source_sha256":  "32A03AA1B5F5841CF15492E31C2D491748790802D2242E1EB2BA44C7C3462768",
+                      "staged":  "staged/verification/040_b2a_role_isolation.sql",
+                      "staged_sha256":  "DACAA102EC8AF54115C331CC0BDD4BF2FA3F5178238B3FED14DC275A81354675",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "verification/041_b2a_caller_negatives.sql",
+                      "source_sha256":  "397C8C8D30259E9377E554BB6B18D47E13580BF8C981AD1931BA993AE20C2E0A",
+                      "staged":  "staged/verification/041_b2a_caller_negatives.sql",
+                      "staged_sha256":  "4AED1AEABFC06F556D25EAB69862128CF7258CEA0F0D015960950AD281A120E6",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "verification/050_b2a_retention_concurrency.sql",
+                      "source_sha256":  "68AF40F0E0FD8C54C14C3A700A53C7C864FBBD9F33FA6BFBA8E58DEAD2E1BF2B",
+                      "staged":  "staged/verification/050_b2a_retention_concurrency.sql",
+                      "staged_sha256":  "82DC2C4C1B11EA617C686AE7315B8F56EB02DCFA691A49A45C175036E462A0D7",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "verification/051_b2a_cleanup_failures.sql",
+                      "source_sha256":  "93AE232BAF458F2036DAE091FFAA7D3333FCD855CE0401372E773766CC6CBC84",
+                      "staged":  "staged/verification/051_b2a_cleanup_failures.sql",
+                      "staged_sha256":  "91C42B43351F527551115FA650B89DB9760B7733BDE806E13AE0CEC40B8B2871",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "verification/052_b2a_cleanup_metadata.sql",
+                      "source_sha256":  "507A0C34588978DEBEEFEE8F57358F428BD219786668593262AB61F1EB0ED339",
+                      "staged":  "staged/verification/052_b2a_cleanup_metadata.sql",
+                      "staged_sha256":  "EC81F3B7BCF03F2017EAD66F681E9639D633BBCC039030C29EC83BBEB844C054",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "verification/preflight_002_readonly.sql",
+                      "source_sha256":  "4035C33FD6B40E2750BAC73B1109F50CD60B48A372A6B735D9E67F4A30162B35",
+                      "staged":  "staged/verification/preflight_002_readonly.sql",
+                      "staged_sha256":  "1091580E1D077B47BCBF047B5901CCBEBA2BF6BE0AD330E7F262EE7785C7F6A2",
+                      "target_replacements":  0,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  true
+                  },
+                  {
+                      "source":  "verification/isolation/b2a_cleanup.spec",
+                      "source_sha256":  "B9CABD5EA7F5BDF087BEA5C2E5D10B4F85E29523D6E03C2207DB062EEE6F8A27",
+                      "staged":  "staged/verification/isolation/b2a_cleanup.spec",
+                      "staged_sha256":  "B2B45E1C3C5F4908A83C4D80BF0C64359F91BA1E271FCECE920D6AA7DFCADE30",
+                      "target_replacements":  1,
+                      "migration_bytes_identical":  false,
+                      "function_bodies_identical":  true,
+                      "function_body_hashes":  [
+
+                                               ],
+                      "preflight_prefix":  false
+                  }
+              ]
+}

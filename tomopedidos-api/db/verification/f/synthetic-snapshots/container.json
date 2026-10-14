@@ -1,0 +1,51 @@
+{
+    "Id":  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "Name":  "/tp-b2a-f-20261014-r01-pg",
+    "State":  {
+                  "Running":  true
+              },
+    "Config":  {
+                   "Image":  "postgres:18.6-bookworm@sha256:afc7e2d441324c0388fa80c3d24f733b4194a4eb7f47dd8ee2b08eb1a24a647c",
+                   "Labels":  {
+                                  "pe.tomopedidos.f.disposable":  "true",
+                                  "com.docker.compose.service":  "postgres",
+                                  "pe.tomopedidos.f.run":  "tp-b2a-f-20261014-r01",
+                                  "com.docker.compose.project":  "tp-b2a-f-20261014-r01"
+                              }
+               },
+    "HostConfig":  {
+                       "PublishAllPorts":  false,
+                       "Privileged":  false,
+                       "PortBindings":  {
+
+                                        },
+                       "NetworkMode":  "tp-b2a-f-20261014-r01-net"
+                   },
+    "NetworkSettings":  {
+                            "Networks":  {
+                                             "tp-b2a-f-20261014-r01-net":  {
+                                                                               "NetworkID":  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                                                                           }
+                                         }
+                        },
+    "Mounts":  [
+                   {
+                       "Destination":  "/var/lib/postgresql",
+                       "RW":  true,
+                       "Name":  "tp-b2a-f-20261014-r01-data",
+                       "Type":  "volume"
+                   },
+                   {
+                       "Destination":  "/f/staged",
+                       "RW":  false,
+                       "Source":  "D:\\tomopedidos\\tomopedidos-api\\db\\verification\\f\\staged",
+                       "Type":  "bind"
+                   },
+                   {
+                       "Destination":  "/f/control",
+                       "RW":  false,
+                       "Source":  "D:\\tomopedidos\\tomopedidos-api\\db\\verification\\f\\control",
+                       "Type":  "bind"
+                   }
+               ]
+}

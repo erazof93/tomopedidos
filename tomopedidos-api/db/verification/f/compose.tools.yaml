@@ -1,0 +1,22 @@
+# Later F2/F3 only: explicitly combine with compose.f.yaml; migrator credential remains mandatory.
+services:
+  goose:
+    profiles: [tools]
+    build:
+      context: ../../../../docker
+      dockerfile: goose.Dockerfile
+    environment:
+      GOOSE_DRIVER: postgres
+      GOOSE_DBSTRING: "host=postgres port=5432 dbname=tp_b2a_f_20261014_r01 user=tomopedidos_migrator sslmode=disable options='-c role=tp_owner -c search_path=migration_meta,pg_catalog'"
+      GOOSE_MIGRATION_DIR: /migrations
+      PGPASSWORD: ${F_MIGRATOR_PASSWORD:?Separate private F migrator credential required}
+    volumes:
+      - type: bind
+        source: ./staged/migrations
+        target: /migrations
+        read_only: true
+        bind:
+          create_host_path: false
+    networks: [f_net]
+    command: [-version]
+    restart: "no"

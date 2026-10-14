@@ -1,0 +1,8 @@
+Tomopedidos — documentación propuesta, 2026-10-13
+
+1. Haz copia de seguridad o commit local de tus .md antes de sustituir.
+2. Los 12 .md originales entregados están corregidos en las mismas rutas relativas.
+3. Los cinco archivos en docs/business, docs/architecture y docs/decisions NO fueron entregados: se incluyen BORRADORES, no sustituyas archivos existentes sin compararlos.
+4. Los AGENTS(1/2/3) se han ubicado respectivamente en tomopedidos-api, tomopedidos-admin y tomopedidos-platform; verifica esa correspondencia.
+5. La Fase 0 sigue pendiente de cierre documental; format:check, gitignore y versionabilidad de lock/sum no han sido verificados aquí.
+6. No se modificó ningún archivo de tu disco D: ni repositorio.

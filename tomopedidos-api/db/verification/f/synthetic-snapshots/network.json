@@ -1,0 +1,13 @@
+{
+    "Id":  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "Name":  "tp-b2a-f-20261014-r01-net",
+    "Internal":  true,
+    "Labels":  {
+                   "com.docker.compose.project":  "tp-b2a-f-20261014-r01"
+               },
+    "Containers":  {
+                       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa":  {
+                                                                                                "Name":  "tp-b2a-f-20261014-r01-pg"
+                                                                                            }
+                   }
+}

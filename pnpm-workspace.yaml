@@ -1,0 +1,11 @@
+packages:
+  - tomopedidos-admin
+  - tomopedidos-platform
+
+sharedWorkspaceLockfile: true
+engineStrict: true
+saveExact: true
+storeDir: .cache/pnpm/store
+cacheDir: .cache/pnpm/cache
+updateNotifier: false
+verifyDepsBeforeRun: error

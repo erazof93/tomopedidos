@@ -1,0 +1,299 @@
+{
+    "schema_version":  1,
+    "delivery":  "D2.1-B2-A-F",
+    "status":  "prepared_static_only_not_executed",
+    "target":  "target.json",
+    "execution_authorized":  false,
+    "credentials_provisioned":  false,
+    "system_identifier_enrollment":  "pending_manual_review",
+    "original_A_E_modified":  false,
+    "original_B1_modified":  false,
+    "Docker_SQL_Goose_PostgreSQL_executed":  false,
+    "stage":  "stage-manifest.json",
+    "migration_bytes":  "00001-00004_original_exact",
+    "function_bodies":  "original_exact",
+    "baseline":  "target-only_copies_of_B1_on_distinct_F_cluster_and_database_only",
+    "automatic_after_separate_approval":  [
+                                              "B1_baseline_copies_metadata_privilege_probes",
+                                              "Goose_qualified_table_up_down_reup",
+                                              "SQL_integrity_and_guards",
+                                              "nine_SQL_primitive_paths",
+                                              "effective_role_ACL_assertions",
+                                              "real_login_negatives_with_private_credentials",
+                                              "E_retention_atomic_failures"
+                                          ],
+    "manual_or_tools":  [
+                            "instance_creation_and_control_ID_enrollment",
+                            "private_credentials_and_HBA_review",
+                            "isolationtester_18_tool_provision_12_permutations",
+                            "captured_PID_only_cancellation",
+                            "proxy_or_instrumented_client_commit_ACK_loss",
+                            "clock_VM_stress_and_measurement",
+                            "main_system_readonly_evidence_if_separately_authorized",
+                            "Celtas_operator_supplied_evidence_no_access"
+                        ],
+    "concrete_incompatibilities_reported":  [
+                                                "B1_C_D_E_target_local_literal_requires_reviewed_target_only_stage",
+                                                "Goose_search_path_requires_schema_qualified_version_table",
+                                                "C_administrative_Down_missing_prepared_in_F_only",
+                                                "B1_metadata_owner_only_not_valid_mid_D_E"
+                                            ],
+    "files":  [
+                  {
+                      "file":  "Assert-FDockerSnapshot.ps1",
+                      "sha256":  "9A483018B61EA2E351FF414384A70A6601B68A42E767AA3696907BBCA2F6D5C4"
+                  },
+                  {
+                      "file":  "Check-F.ps1",
+                      "sha256":  "D6EAC9E0D97F3C16C319E42B617AB029CD96DB0FB7B4E4B64316D68A2091F1D7"
+                  },
+                  {
+                      "file":  "compose.f.yaml",
+                      "sha256":  "BA362D5C0AAE6CEE19EFF6D5BB8E3F0CD5348485A5F564578BAC939C9992639C"
+                  },
+                  {
+                      "file":  "control/000_identify.sql",
+                      "sha256":  "DE09107F76244529593BFAB82BAAC1441473CC47F4462B1D55A401EF9428495F"
+                  },
+                  {
+                      "file":  "control/001_preflight.sql",
+                      "sha256":  "B46A601849AB92C126859DAEEEEF8CACA20491DDC33BE46F86077BDB72D84133"
+                  },
+                  {
+                      "file":  "control/002_post_down.sql",
+                      "sha256":  "AD661152A2FAE3811D11B179545D77F4AF933699804B7C2B2E0DE10B3B9BE656"
+                  },
+                  {
+                      "file":  "control/003_c_down.sql",
+                      "sha256":  "E2C200C7485F14E68CFC9E6A30A67F25AFB9B4A02694D55063B2D8EC1EF968CA"
+                  },
+                  {
+                      "file":  "control/004_migration_metadata.sql",
+                      "sha256":  "227AC62AFAE822933303D0B7826EC6E52218A1DCC1366278596C457CABA6E1FC"
+                  },
+                  {
+                      "file":  "control/fixtures/030_integrity.sql",
+                      "sha256":  "57C59D7C72E68CFDA106D6B62B78941584F82618F5BFCC329E623FEA7DA916DF"
+                  },
+                  {
+                      "file":  "control/fixtures/060_auth_primitives.sql",
+                      "sha256":  "EAB364E9C8869078F7C55F41072A2FF7A35BEE236842FA59BE65EF2C358E0648"
+                  },
+                  {
+                      "file":  "control/fixtures/061_fail_closed.sql",
+                      "sha256":  "5E80E7F179290276713CB3CE22DBCCA63A4C3AFA286543D800712DC481FC87AC"
+                  },
+                  {
+                      "file":  "control/fixtures/070_real_login.sql",
+                      "sha256":  "E78D5F1217B2746627B833C2691B5203733AB31B6ABB7BA06782572F385C8826"
+                  },
+                  {
+                      "file":  "control/fixtures/071_maintenance_negatives.sql",
+                      "sha256":  "58E96213B962278F9E2FAD2BD130E77D395E266AD26156FC411DC9BA25321288"
+                  },
+                  {
+                      "file":  "control/fixtures/090_fault_seed.sql",
+                      "sha256":  "1A2399D6E60940EB50830C8C1A4AC0E165F9986D7594906E6DE86F7CB669304F"
+                  },
+                  {
+                      "file":  "control/fixtures/091_fault_holder.sql",
+                      "sha256":  "8A17BB40E72051FEFFC5373D2A92F842B0A3E60EF18B4D9443A4D91CBC8FD8B3"
+                  },
+                  {
+                      "file":  "control/fixtures/092_lock_timeout.sql",
+                      "sha256":  "C52B5D349BA36F3F1FCF9C05CBEF54413A55CD8975CAC0A0BBC06EECD53A1DBF"
+                  },
+                  {
+                      "file":  "control/fixtures/093_cancelled_batch.sql",
+                      "sha256":  "94E26EA3C4AE6AAFF935B1E5C0056E4B7EFD7A510B02B1A4955F1BEDB1F691EE"
+                  },
+                  {
+                      "file":  "control/fixtures/094_cancel_backend.sql",
+                      "sha256":  "02DC0A56F9EE33E9A0DE7C5AFA8D79DA86EA26215403C760E65BF5E0995AE0E8"
+                  },
+                  {
+                      "file":  "control/fixtures/095_ambiguous_batch.sql",
+                      "sha256":  "6008B4086E1D0C12DC4C3CF3F047B13C9B8D616824F72CE1266FF080DA3DF6F3"
+                  },
+                  {
+                      "file":  "control/fixtures/096_reconcile_fault.sql",
+                      "sha256":  "C58AB499B8D742D8B093F96F070B2BCF129D022EF8F7668327DE40975D2098C0"
+                  },
+                  {
+                      "file":  "control/fixtures/097_fault_teardown.sql",
+                      "sha256":  "A5F9538568087FB11E9C323319A4569AE1668B2CDC90B73079FAE6CA2F44646F"
+                  },
+                  {
+                      "file":  "Prepare-FStage.ps1",
+                      "sha256":  "1A979394E5AA1203F1E10DF5BD79484D9DA3C02B577BDFDF65C7D5F80DD63ADF"
+                  },
+                  {
+                      "file":  "Print-FCommands.ps1",
+                      "sha256":  "4A69702760FFF0BE44B3A48B2743B6331FA57CE4022B0B85DF307584723C0FAC"
+                  },
+                  {
+                      "file":  "staged/administration/b2a-assert-state.sql",
+                      "sha256":  "6FAE6CBFCDE2C0F7D0BE872576FE29E0ECF403065965F9AE5ABBC15F161EAE12"
+                  },
+                  {
+                      "file":  "staged/administration/b2a-auth-disable-v1.sql",
+                      "sha256":  "236DD9B3E54F41B160A17558EECFDB02A685811DB6BFE63B11602B59BC95821C"
+                  },
+                  {
+                      "file":  "staged/administration/b2a-auth-enable-v1.sql",
+                      "sha256":  "C4C5170C64253C4FAE381BD3D6EB5BE0B4C6525A6A6A2CA765B79A908EF4816A"
+                  },
+                  {
+                      "file":  "staged/administration/b2a-auth-functions-v1.sql",
+                      "sha256":  "1F5F490334896DBF56F43051EBA5C1AD0D66A4B7AE5DA970409A185E5E16D8BC"
+                  },
+                  {
+                      "file":  "staged/administration/b2a-auth-grants-v1.sql",
+                      "sha256":  "E6CA634DDD0B4E997EFA4E1C775EBC7C58058CB7E14267FF3DA9904D534E3B10"
+                  },
+                  {
+                      "file":  "staged/administration/b2a-auth-ungrant-v1.sql",
+                      "sha256":  "27DD0680F1B33CBE3847508C85D6CD50095387D08EF67FD5ABD41D8ED84699AF"
+                  },
+                  {
+                      "file":  "staged/administration/b2a-role-preflight.sql",
+                      "sha256":  "AA89F246ADB0569580E4D7CBCC5C47400E0B4B7EEFD4493EE63FBB791B1AE70D"
+                  },
+                  {
+                      "file":  "staged/administration/b2a-role-provision-v1.sql",
+                      "sha256":  "FE394F4460E0CC0AC67371B5C54AF7116AC15EE7AFFFAAC9E8B339B5BF067805"
+                  },
+                  {
+                      "file":  "staged/administration/retention/b2a-cleanup-assert.sql",
+                      "sha256":  "43D461BFFB38B4997D5ADB3EA7B85CA88E7A8266D50F44D9ACE8819A045D0B6A"
+                  },
+                  {
+                      "file":  "staged/administration/retention/b2a-cleanup-batch.sql",
+                      "sha256":  "330501202E657E8E25E7E8375516650461B84292D2E9148C44062F7D930954E6"
+                  },
+                  {
+                      "file":  "staged/administration/retention/b2a-cleanup-disable-v1.sql",
+                      "sha256":  "EE60ABCEE63567DB87E9E4DB48CFA16F4EB8DC5D780BA7C57670265B854D4D04"
+                  },
+                  {
+                      "file":  "staged/administration/retention/b2a-cleanup-enable-v1.sql",
+                      "sha256":  "F52B6D3655E7ADCCA7A20D18A8998CBFE27423254538D2706C35F9733001622A"
+                  },
+                  {
+                      "file":  "staged/administration/retention/b2a-cleanup-role-provision-v1.sql",
+                      "sha256":  "4A0AF82620EF428FF11B2FD2D39A372FFDFDE6A70D9AAA61D23E1F54B73F1F49"
+                  },
+                  {
+                      "file":  "staged/administration/retention/b2a-session-cleanup-down-v1.sql",
+                      "sha256":  "F255CB367C84FC0CC40CA5375B918766A0CF8DE03904F68B2F276A5B987133F3"
+                  },
+                  {
+                      "file":  "staged/administration/retention/b2a-session-cleanup-v1.sql",
+                      "sha256":  "5EBC1BB9AEE0D458AD1743560C61FD2A5F043A9EC1FCD7ACC4FEDC30C9F8CE67"
+                  },
+                  {
+                      "file":  "staged/bootstrap/001_roles.sql",
+                      "sha256":  "AF4A499B3E3005AA5965A544A1B205294F487E06BDB53C687C7CA166FD1E4255"
+                  },
+                  {
+                      "file":  "staged/bootstrap/002_schema_privileges.sql",
+                      "sha256":  "5C44D8315EA6E79E6AAF0945D68FF5C0A416DDC8277FEC92C80E3AE39140CBED"
+                  },
+                  {
+                      "file":  "staged/migrations/00001_identity_credentials.sql",
+                      "sha256":  "AC7CA512915A8290FE20D5A3003C30BCD78407AB55DCC630923A65EADDAF4258"
+                  },
+                  {
+                      "file":  "staged/migrations/00002_audience_sessions.sql",
+                      "sha256":  "13909AD7561780C9CC55A38A8B789A64D12C511E7A94BB4ACDA3036F12BB3F83"
+                  },
+                  {
+                      "file":  "staged/migrations/00003_identity_guards_indexes.sql",
+                      "sha256":  "B1DC89967190A919E861F1B7FD77EB6E8EFCA9BA44DDA35B30C4D14AB7621B31"
+                  },
+                  {
+                      "file":  "staged/migrations/00004_session_cleanup_index.sql",
+                      "sha256":  "37BE379E0D91F8ACA0C75A36E6D4B0E39697B8EE9B219BDD479D8C52FF95E223"
+                  },
+                  {
+                      "file":  "staged/verification/010_b1_metadata.sql",
+                      "sha256":  "B96F013F387611A06EF3666E8A6B7FF52DC47D76714957E3EC9235768063D238"
+                  },
+                  {
+                      "file":  "staged/verification/020_b1_effective_privileges.sql",
+                      "sha256":  "936695ABF75398EC6A606DA27B54BD8CD7A4678C9C72600F6E6A0A6F7CF38702"
+                  },
+                  {
+                      "file":  "staged/verification/040_b2a_role_isolation.sql",
+                      "sha256":  "DACAA102EC8AF54115C331CC0BDD4BF2FA3F5178238B3FED14DC275A81354675"
+                  },
+                  {
+                      "file":  "staged/verification/041_b2a_caller_negatives.sql",
+                      "sha256":  "4AED1AEABFC06F556D25EAB69862128CF7258CEA0F0D015960950AD281A120E6"
+                  },
+                  {
+                      "file":  "staged/verification/050_b2a_retention_concurrency.sql",
+                      "sha256":  "82DC2C4C1B11EA617C686AE7315B8F56EB02DCFA691A49A45C175036E462A0D7"
+                  },
+                  {
+                      "file":  "staged/verification/051_b2a_cleanup_failures.sql",
+                      "sha256":  "91C42B43351F527551115FA650B89DB9760B7733BDE806E13AE0CEC40B8B2871"
+                  },
+                  {
+                      "file":  "staged/verification/052_b2a_cleanup_metadata.sql",
+                      "sha256":  "EC81F3B7BCF03F2017EAD66F681E9639D633BBCC039030C29EC83BBEB844C054"
+                  },
+                  {
+                      "file":  "staged/verification/isolation/b2a_cleanup.spec",
+                      "sha256":  "B2B45E1C3C5F4908A83C4D80BF0C64359F91BA1E271FCECE920D6AA7DFCADE30"
+                  },
+                  {
+                      "file":  "staged/verification/preflight_002_readonly.sql",
+                      "sha256":  "1091580E1D077B47BCBF047B5901CCBEBA2BF6BE0AD330E7F262EE7785C7F6A2"
+                  },
+                  {
+                      "file":  "stage-manifest.json",
+                      "sha256":  "4A49956A8AC28C5E811A13E6E998056C766A33C926629B5B63E64FFAA7A955CD"
+                  },
+                  {
+                      "file":  "synthetic-snapshots/container.json",
+                      "sha256":  "0AFB05C10156DAB9C00FAE38FF28FEEFCA1A2FF96AB26ABBD994A9F5BBE03714"
+                  },
+                  {
+                      "file":  "synthetic-snapshots/network.json",
+                      "sha256":  "7BE19EBCB6CA5BD22D98BD1E186BDC4259935611592C73982B485F5BF5906E79"
+                  },
+                  {
+                      "file":  "synthetic-snapshots/volume.json",
+                      "sha256":  "2BB35CA8E127D44783AC52324DB570B4957CC4969D429BE45F0CDBD718606FD7"
+                  },
+                  {
+                      "file":  "target.json",
+                      "sha256":  "FBAEDBC5C6904E6A868976780B33795051DAC7CEF928A42EF3EB6BD44CDFFA15"
+                  },
+                  {
+                      "file":  "Test-FSnapshotGuard.ps1",
+                      "sha256":  "A4C5932001F8942F1470940C790089BD760045C2A732EC183C5F2EE36E119713"
+                  },
+                  {
+                      "file":  "../../../../compose.yaml",
+                      "sha256":  "A3B8C57B4BCA6460019774752FD90530C6675F041579BB79317C1999ACE33EBF"
+                  },
+                  {
+                      "file":  "../../../../docker/goose.Dockerfile",
+                      "sha256":  "17E973122E4682691A2872D2C5255931E5973DD00FE373D94064A0B52B79FDE5"
+                  },
+                  {
+                      "file":  "../../../../docs/runbooks/b2a-f-disposable-verification.md",
+                      "sha256":  "BC6400B133BA43846381B962E190682996912F4711936491A57156C52F536B7F"
+                  },
+                  {
+                      "file":  "stage-target-diff.txt",
+                      "sha256":  "D0D09B48E49B0E3C5ED52120F655B74B7F914251A3A5192261375428ACFCEE02"
+                  },
+                  {
+                      "file":  "compose.tools.yaml",
+                      "sha256":  "3C2C9306A6A0EE4AFCE37E36D81F024CFA3E15877F6FA86A2A1E42BB6D7F5CF3"
+                  }
+              ]
+}

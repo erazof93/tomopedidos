@@ -1,0 +1,189 @@
+schema_version: 1
+package: b2a-role-isolation
+version: 1
+status: prepared_static_only_not_applied
+installation: administrative_psql_outside_goose
+target:
+  database: tomopedidos_local
+  postgres_major: 18
+  administrator: tomopedidos_bootstrap
+  isolated_host_volume_requires_separate_approval: true
+roles:
+  tomopedidos_auth_executor:
+    login: false
+    inherit: false
+    elevated_attributes: false
+    memberships: []
+    owns: seven_normal_C_functions_only
+  tomopedidos_auth_revoke_executor:
+    login: false
+    inherit: false
+    elevated_attributes: false
+    memberships: []
+    owns: two_privileged_C_functions_only
+    operational_callers: []
+  tomopedidos_auth_runtime:
+    login: true
+    password: null
+    inherit: false
+    elevated_attributes: false
+    memberships: []
+    owns: []
+    authentication_setup: separate_private_authorized_procedure
+stages:
+  provisioned: roles_only_no_connect_usage_execute
+  c: C_installed_owner_only_no_column_grants
+  executors: executor_usage_and_column_grants_auth_disconnected
+  enabled: auth_connect_usage_and_seven_normal_execute_only
+transitions:
+  provision: ../b2a-role-provision-v1.sql
+  executor_grants: ../b2a-auth-grants-v1.sql
+  caller_enable: ../b2a-auth-enable-v1.sql
+  caller_disable: ../b2a-auth-disable-v1.sql
+  executor_ungrant: ../b2a-auth-ungrant-v1.sql
+security:
+  no_B1_modification: true
+  no_owner_memberships_or_takeover: true
+  no_table_level_grants: true
+  no_grant_option: true
+  no_role_settings: true
+  no_default_acl_edits: true
+  no_retries: true
+  no_automatic_role_drop: true
+  public_identity_access: false
+  tenant_identity_access: false
+  raw_password_token_csrf_key_in_files: false
+privileged_functions_denied_to_auth_tenant_public:
+  - "identity.revoke_audience(bytea, text)"
+  - "identity.revoke_global(bytea, text)"
+requested_conceptual_names_not_C_contracts:
+  - revoke_audience_privileged
+  - revoke_global_privileged
+unexpected_privileged_alias_policy: abort_do_not_rename_C
+normal_auth_execute_after_separate_enable:
+  - "identity.lookup_credential(text, text)"
+  - "identity.issue_session(uuid, bigint, bigint, bigint, text, uuid, bytea, text, bytea)"
+  - "identity.validate_session(bytea, text)"
+  - "identity.record_activity(bytea, text)"
+  - "identity.revoke_session(bytea, text)"
+  - "identity.mark_expired(bytea, text)"
+  - "identity.rehash_conditional(uuid, bigint, text, text)"
+column_permissions:
+  - role: tomopedidos_auth_executor
+    table: identity.identities
+    privilege: SELECT
+    columns: [id,email_canonical,status,email_verified_at,auth_epoch,credential_revision,created_at]
+  - role: tomopedidos_auth_executor
+    table: identity.identities
+    privilege: UPDATE
+    columns: [credential_revision]
+  - role: tomopedidos_auth_executor
+    table: identity.identity_credentials
+    privilege: SELECT
+    columns: [identity_id,password_hash]
+  - role: tomopedidos_auth_executor
+    table: identity.identity_credentials
+    privilege: UPDATE
+    columns: [password_hash,changed_at]
+  - role: tomopedidos_auth_executor
+    table: identity.audience_revocations
+    privilege: SELECT
+    columns: [identity_id,audience,auth_epoch]
+  - role: tomopedidos_auth_executor
+    table: identity.audience_revocations
+    privilege: UPDATE
+    columns: [audience]
+  - role: tomopedidos_auth_executor
+    table: identity.sessions
+    privilege: SELECT
+    columns: [session_id,identity_id,audience,token_hash,identity_epoch,audience_epoch,authentication_level,csrf_key_id,csrf_generation,csrf_salt,created_at,last_activity_at,idle_expires_at,absolute_expires_at,revoked_at,expired_at]
+  - role: tomopedidos_auth_executor
+    table: identity.sessions
+    privilege: INSERT
+    columns: [session_id,identity_id,audience,token_hash,identity_epoch,audience_epoch,authentication_level,csrf_key_id,csrf_generation,csrf_salt,created_at,last_activity_at,idle_expires_at,absolute_expires_at]
+  - role: tomopedidos_auth_executor
+    table: identity.sessions
+    privilege: UPDATE
+    columns: [last_activity_at,idle_expires_at,revoked_at,expired_at]
+  - role: tomopedidos_auth_revoke_executor
+    table: identity.identities
+    privilege: SELECT
+    columns: [id,status,email_verified_at,auth_epoch,credential_revision,created_at]
+  - role: tomopedidos_auth_revoke_executor
+    table: identity.identities
+    privilege: UPDATE
+    columns: [auth_epoch]
+  - role: tomopedidos_auth_revoke_executor
+    table: identity.audience_revocations
+    privilege: SELECT
+    columns: [identity_id,audience,auth_epoch]
+  - role: tomopedidos_auth_revoke_executor
+    table: identity.audience_revocations
+    privilege: UPDATE
+    columns: [auth_epoch]
+  - role: tomopedidos_auth_revoke_executor
+    table: identity.sessions
+    privilege: SELECT
+    columns: [session_id,identity_id,audience,token_hash,identity_epoch,audience_epoch,authentication_level,csrf_key_id,csrf_generation,csrf_salt,created_at,last_activity_at,idle_expires_at,absolute_expires_at,revoked_at,expired_at]
+  - role: tomopedidos_auth_revoke_executor
+    table: identity.sessions
+    privilege: UPDATE
+    columns: [expired_at]
+verification:
+  metadata: ../../verification/040_b2a_role_isolation.sql
+  actual_caller_negatives: ../../verification/041_b2a_caller_negatives.sql
+  caller_auth_expected_negatives: 26
+  caller_tenant_expected_negatives: 33
+  public: ACL_grantee_zero_not_a_login_role
+  static: ../../verification/check_b2a_delivery_d.ps1
+  PostgreSQL_executed: false
+execution_gates:
+  - explicit_target_and_SQL_authorization
+  - A_B_applied_and_full_metadata_guards_verified
+  - C_installed_and_exact_source_owner_ACL_verified
+  - executor_function_paths_locks_triggers_search_path_tests
+  - independent_authorization_for_caller_enable
+  - private_credentials_HBA_TLS_review
+  - actual_auth_and_tenant_login_negative_evidence
+  - trusted_Go_proof_authority_CSRF_commit_boundary_before_API_use
+pinned_files:
+  - file: ../b2a-role-preflight.sql
+    sha256: B9D56E054A8185803BE246989CD8B5ADC5C9352DF9A51D961E417CB1955D8BDE
+  - file: ../b2a-role-provision-v1.sql
+    sha256: F923E4CBD4FA06A59B368C25638DD06C4563330CD75B1CE6E11E244E571F5A9A
+  - file: ../b2a-assert-state.sql
+    sha256: B12A022AC01743C1A8C614DEA6FF399A3F98C02E85E3A4409E8E72DB2D39E65F
+  - file: ../b2a-auth-grants-v1.sql
+    sha256: 23B8B3EB5FA476C4B63E55BF931FE2899EC0A0A12FF35714673662EF55A84192
+  - file: ../b2a-auth-enable-v1.sql
+    sha256: 3F5E8081126DE338CA76815355A1DE6473E2CF2DB8F08D1F1FDB0DDAB3882C1A
+  - file: ../b2a-auth-disable-v1.sql
+    sha256: E41FFA40FFBA69BEB3DC349521F97C313BCD1904AB53DD409EC070384B7D393E
+  - file: ../b2a-auth-ungrant-v1.sql
+    sha256: E8D6B108500633D7C8794B68122A9DFF1A07A48707C473E3DBB4864FC97EC15E
+  - file: ../../verification/040_b2a_role_isolation.sql
+    sha256: 32A03AA1B5F5841CF15492E31C2D491748790802D2242E1EB2BA44C7C3462768
+  - file: ../../verification/041_b2a_caller_negatives.sql
+    sha256: 397C8C8D30259E9377E554BB6B18D47E13580BF8C981AD1931BA993AE20C2E0A
+  - file: ../../verification/check_b2a_contracts.ps1
+    sha256: C31676280F3D20AE86799FADB1AB452F99D338AB3772E5116EC4BD8F6B43AE05
+  - file: ../../verification/check_b2a_delivery_d.ps1
+    sha256: 6D8A9EF1BFB1C1A1AF536DDF2646C33DD4CE27CBD9E0BAD62852222282D53803
+  - file: ../../bootstrap/001_roles.sql
+    sha256: 2EAA920E1DF044DDA6003FE347511F092347BBD26CEDB22EF0BB91F6CF83D5B2
+  - file: ../../bootstrap/002_schema_privileges.sql
+    sha256: 2AF021298BBBF5B58B942618C543941E6D80DC46E6EDE66F195FBB3A10A6E122
+  - file: ../../migrations/00001_identity_credentials.sql
+    sha256: AC7CA512915A8290FE20D5A3003C30BCD78407AB55DCC630923A65EADDAF4258
+  - file: ../../migrations/00002_audience_sessions.sql
+    sha256: 13909AD7561780C9CC55A38A8B789A64D12C511E7A94BB4ACDA3036F12BB3F83
+  - file: ../../migrations/00003_identity_guards_indexes.sql
+    sha256: B1DC89967190A919E861F1B7FD77EB6E8EFCA9BA44DDA35B30C4D14AB7621B31
+  - file: ../b2a-auth-functions-v1.sql
+    sha256: D22C52F086E06A7AFEE3CC59C57C1F03631EA74446FD9315D15A79F392B023C2
+  - file: b2a-auth-v1.yaml
+    sha256: 3B822D4D8B538949757D85C8E265777D0861E0329B653A9C58F38F081E65555E
+  - file: ../../../../docs/runbooks/b2a-function-lifecycle.md
+    sha256: EB1CB6693E3C9366E571DE059DC3CDFEDF2138186B2A121A502D5B6018948F35
+  - file: ../../../../docs/runbooks/b2a-role-isolation.md
+    sha256: 33D5137A746F8B6A222CFFCD8B7D555812EB8E37B7208966960DA0DF2B20B81B

@@ -1,0 +1,205 @@
+schema_version: 1
+package: b2a-auth-functions
+version: 1
+status: written_static_review_only_not_applied
+installation: initial_only_administrative_transaction_not_goose
+target:
+  database: tomopedidos_local
+  postgres_major: 18
+  administrator: tomopedidos_bootstrap
+  session_role_must_equal_current_role: true
+artifact:
+  sql: ../b2a-auth-functions-v1.sql
+  sha256: D22C52F086E06A7AFEE3CC59C57C1F03631EA74446FD9315D15A79F392B023C2
+dependencies:
+  migrations:
+    - file: ../../migrations/00001_identity_credentials.sql
+      sha256: AC7CA512915A8290FE20D5A3003C30BCD78407AB55DCC630923A65EADDAF4258
+    - file: ../../migrations/00002_audience_sessions.sql
+      sha256: 13909AD7561780C9CC55A38A8B789A64D12C511E7A94BB4ACDA3036F12BB3F83
+    - file: ../../migrations/00003_identity_guards_indexes.sql
+      sha256: B1DC89967190A919E861F1B7FD77EB6E8EFCA9BA44DDA35B30C4D14AB7621B31
+  baseline: B1_existing_verified_no_bootstrap_replay
+  prerequisites:
+    - A_and_B_applied_and_metadata_body_hashes_verified_in_authorized_target
+    - roles_provisioned_separately_no_memberships_no_schema_CREATE
+    - no_existing_function_names_or_overloads_for_initial_install
+    - redacted_server_client_logs_and_bind_parameter_capture_disabled
+roles:
+  normal_owner: tomopedidos_auth_executor
+  privileged_owner: tomopedidos_auth_revoke_executor
+  future_normal_caller: tomopedidos_auth_runtime
+  owners:
+    login: false
+    inherit: false
+    superuser: false
+    createdb: false
+    createrole: false
+    replication: false
+    bypassrls: false
+    memberships: []
+  provisioned_by_this_package: false
+security:
+  search_path: [pg_catalog, pg_temp]
+  language: plpgsql
+  security_definer: true
+  volatility: volatile
+  parallel: unsafe
+  dynamic_sql: false
+  public_execute: false
+  tenant_execute: false
+  migrator_execute: false
+  immediate_execute_acl: owner_only
+  caller_grants_applied: false
+  transaction_isolation: read_committed
+  operations_per_transaction: 1
+  auto_retry: false
+  commit_ambiguous: no_success_no_token_delivery_no_blind_retry
+  timeouts_candidate_not_production:
+    pool_wait_ms: 500
+    lock_ms: 1000
+    statement_ms: 2000
+    transaction_ms: 3000
+    idle_transaction_ms: 1000
+  application_transaction_deadline_pending_B2B: true
+  secrets_not_accepted: [raw_password, raw_session_token, csrf_secret_key]
+  sensitive_values_never_log: [password_hash, expected_hash, new_hash, token_digest]
+functions:
+  - signature: "identity.lookup_credential(text, text)"
+    source_sha256_lf: F53AB501509EF67AF3325B6AB2FE18B2586995295D3148D394162CEC0728720B
+    previous_source: absent_initial_install
+    owner: tomopedidos_auth_executor
+    input_names: [p_email_canonical, p_audience]
+    returns_sql: "RETURNS TABLE (identity_id uuid, password_hash text, credential_revision bigint, identity_epoch bigint, audience_epoch bigint)"
+    immediate_callers: []
+    future_callers_after_D: [tomopedidos_auth_runtime]
+    contract: "Internal PHC/evidence only; no authentication decision or external response."
+  - signature: "identity.issue_session(uuid, bigint, bigint, bigint, text, uuid, bytea, text, bytea)"
+    source_sha256_lf: E0E4D81FED4D047BD447F95647DF4517B30B109885E2D9DEA5CF75E69ED4D141
+    previous_source: absent_initial_install
+    owner: tomopedidos_auth_executor
+    input_names: [p_identity_id, p_expected_revision, p_expected_identity_epoch, p_expected_audience_epoch, p_audience, p_session_id, p_digest, p_csrf_key_id, p_csrf_salt]
+    returns_sql: "RETURNS TABLE (result text, session_id uuid, created_at timestamptz, idle_expires_at timestamptz, absolute_expires_at timestamptz)"
+    immediate_callers: []
+    future_callers_after_D: [tomopedidos_auth_runtime]
+    contract: "Opaque bytes generated/digested in Go; no secret returned, even on success."
+  - signature: "identity.validate_session(bytea, text)"
+    source_sha256_lf: 736057B501A47088E7FE8A77AEAD2A19D6AB880AC93877D53B071AE10E3AAC46
+    previous_source: absent_initial_install
+    owner: tomopedidos_auth_executor
+    input_names: [p_digest, p_audience]
+    returns_sql: "RETURNS TABLE ( result text, session_id uuid, identity_id uuid, audience text, authentication_level text, csrf_key_id text, csrf_generation bigint, csrf_salt bytea, checked_at timestamptz, idle_expires_at timestamptz, absolute_expires_at timestamptz, current_identity_epoch bigint, current_audience_epoch bigint )"
+    immediate_callers: []
+    future_callers_after_D: [tomopedidos_auth_runtime]
+    contract: "One operation per short transaction; any result is provisional until COMMIT."
+  - signature: "identity.record_activity(bytea, text)"
+    source_sha256_lf: C712CB021E5FDF5FF64C96F68EEE4BFA3D9AA54BE2B415D44AC88ED1ED4F7822
+    previous_source: absent_initial_install
+    owner: tomopedidos_auth_executor
+    input_names: [p_digest, p_audience]
+    returns_sql: "RETURNS TABLE ( result text, session_id uuid, identity_id uuid, audience text, authentication_level text, csrf_key_id text, csrf_generation bigint, csrf_salt bytea, checked_at timestamptz, idle_expires_at timestamptz, absolute_expires_at timestamptz, current_identity_epoch bigint, current_audience_epoch bigint )"
+    immediate_callers: []
+    future_callers_after_D: [tomopedidos_auth_runtime]
+    contract: "One operation per short transaction; any result is provisional until COMMIT."
+  - signature: "identity.revoke_session(bytea, text)"
+    source_sha256_lf: DEC02E132C4EE23000B3047C8EF24A5621730FA300DCB80D1E1C209EE139309F
+    previous_source: absent_initial_install
+    owner: tomopedidos_auth_executor
+    input_names: [p_digest, p_audience]
+    returns_sql: "RETURNS TABLE ( result text, session_id uuid, identity_id uuid, audience text, authentication_level text, csrf_key_id text, csrf_generation bigint, csrf_salt bytea, checked_at timestamptz, idle_expires_at timestamptz, absolute_expires_at timestamptz, current_identity_epoch bigint, current_audience_epoch bigint )"
+    immediate_callers: []
+    future_callers_after_D: [tomopedidos_auth_runtime]
+    contract: "One operation per short transaction; any result is provisional until COMMIT."
+  - signature: "identity.mark_expired(bytea, text)"
+    source_sha256_lf: 9A9800B8D8BE26030B12BD732DE309EB8C8221806D4467272DE86957B3F08220
+    previous_source: absent_initial_install
+    owner: tomopedidos_auth_executor
+    input_names: [p_digest, p_audience]
+    returns_sql: "RETURNS TABLE ( result text, session_id uuid, identity_id uuid, audience text, authentication_level text, csrf_key_id text, csrf_generation bigint, csrf_salt bytea, checked_at timestamptz, idle_expires_at timestamptz, absolute_expires_at timestamptz, current_identity_epoch bigint, current_audience_epoch bigint )"
+    immediate_callers: []
+    future_callers_after_D: [tomopedidos_auth_runtime]
+    contract: "One operation per short transaction; any result is provisional until COMMIT."
+  - signature: "identity.revoke_audience(bytea, text)"
+    source_sha256_lf: 218EEAA3AE40504F96AEF8A4D63EAAFF32C8485494BEE8ADDF2B1F504CE010C7
+    previous_source: absent_initial_install
+    owner: tomopedidos_auth_revoke_executor
+    input_names: [p_digest, p_audience]
+    returns_sql: "RETURNS TABLE ( result text, session_id uuid, identity_id uuid, audience text, authentication_level text, csrf_key_id text, csrf_generation bigint, csrf_salt bytea, checked_at timestamptz, idle_expires_at timestamptz, absolute_expires_at timestamptz, current_identity_epoch bigint, current_audience_epoch bigint )"
+    immediate_callers: []
+    future_callers_after_D: []
+    contract: "Dormant privileged function: no operational EXECUTE caller, including auth."
+  - signature: "identity.revoke_global(bytea, text)"
+    source_sha256_lf: 8FB466B18A96BD91ECC3FB0012D2CA91126E73C2067E13B51D001BD6E394E49F
+    previous_source: absent_initial_install
+    owner: tomopedidos_auth_revoke_executor
+    input_names: [p_digest, p_audience]
+    returns_sql: "RETURNS TABLE ( result text, session_id uuid, identity_id uuid, audience text, authentication_level text, csrf_key_id text, csrf_generation bigint, csrf_salt bytea, checked_at timestamptz, idle_expires_at timestamptz, absolute_expires_at timestamptz, current_identity_epoch bigint, current_audience_epoch bigint )"
+    immediate_callers: []
+    future_callers_after_D: []
+    contract: "Dormant privileged function: no operational EXECUTE caller, including auth."
+  - signature: "identity.rehash_conditional(uuid, bigint, text, text)"
+    source_sha256_lf: 7AA63818771E50B4641091A2AA61D2CABF9865A1F486862A8057A28AF39AAE91
+    previous_source: absent_initial_install
+    owner: tomopedidos_auth_executor
+    input_names: [p_identity_id, p_expected_revision, p_expected_hash, p_new_hash]
+    returns_sql: "RETURNS TABLE (result text, credential_revision bigint)"
+    immediate_callers: []
+    future_callers_after_D: [tomopedidos_auth_runtime]
+    contract: "Separate transaction after password verification; CAS, revision +1, no epoch change."
+# Derived from concrete SQL. This is a PLAN for D, not executable GRANT SQL.
+# Row locking needs SELECT and UPDATE on at least one column. The normal
+# executor uses immutable audience as its lock-only UPDATE column; B blocks
+# rekeying. Do not grant it UPDATE(auth_epoch) on audience_revocations.
+executor_permission_plan:
+  tomopedidos_auth_executor:
+    schema_usage: [identity]
+    tables:
+      identity.identities:
+        select: [id, email_canonical, status, email_verified_at, auth_epoch, credential_revision, created_at]
+        update: [credential_revision]
+      identity.identity_credentials:
+        select: [identity_id, password_hash]
+        update: [password_hash, changed_at]
+      identity.audience_revocations:
+        select: [identity_id, audience, auth_epoch]
+        update: [audience]
+      identity.sessions:
+        select: all_columns_used_by_typed_row
+        insert: [session_id, identity_id, audience, token_hash, identity_epoch, audience_epoch, authentication_level, csrf_key_id, csrf_generation, csrf_salt, created_at, last_activity_at, idle_expires_at, absolute_expires_at]
+        update: [last_activity_at, idle_expires_at, revoked_at, expired_at]
+  tomopedidos_auth_revoke_executor:
+    schema_usage: [identity]
+    tables:
+      identity.identities:
+        select: [id, status, email_verified_at, auth_epoch, credential_revision, created_at]
+        update: [auth_epoch]
+      identity.audience_revocations:
+        select: [identity_id, audience, auth_epoch]
+        update: [auth_epoch]
+      identity.sessions:
+        select: all_columns_used_by_typed_row
+        update: [expired_at]
+    # UPDATE(expired_at) supports session FOR UPDATE and terminal detection.
+    # No credential access, session insertion, activity or individual logout.
+  caller:
+    connect: tomopedidos_local
+    schema_usage: [identity]
+    direct_table_access: none
+    execute: only_seven_normal_signatures_after_D_verification
+  denied_for_all_operational_actors:
+    - identity_schema_CREATE
+    - table_ownership
+    - DDL
+    - business_schema_access
+    - membership_in_owner_migrator_or_executors
+    - direct_identity_administration
+    - cleanup
+operational_gates:
+  - separate_authorization_for_role_provisioning
+  - separate_authorization_for_A_B_migrations_and_C_install
+  - D_table_column_privileges_and_negative_isolation_tests
+  - no_privileged_caller_until_fresh_auth_MFA_authority_contract_approved
+  - B2B_trusted_proof_interactive_activity_logout_CSRF_and_commit_handling
+  - Argon2_profiles_benchmark_and_limits
+  - CSRF_binary_keyring_and_logging_policy
+
